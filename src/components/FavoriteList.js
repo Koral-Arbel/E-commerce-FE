@@ -5,14 +5,14 @@ const FavoriteList = () => {
   const [favorites, setFavorites] = useState([]);
 
   // פונקציה להוספת מוצר לרשימת המועדפים
-  const addToFavorites = (product) => {
-    setFavorites((prevFavorites) => [...prevFavorites, product]);
+  const addToFavorites = (item) => {
+    setFavorites((prevFavorites) => [...prevFavorites, item]);
   };
 
   // פונקציה להסרת מוצר מרשימת המועדפים
-  const removeFromFavorites = (productId) => {
+  const removeFromFavorites = (itemId) => {
     setFavorites((prevFavorites) =>
-      prevFavorites.filter((product) => product.id !== productId)
+      prevFavorites.filter((item) => item.id !== itemId)
     );
   };
 
@@ -20,18 +20,15 @@ const FavoriteList = () => {
     <div>
       <h2>Favorite Products</h2>
       <ul>
-        {favorites.map((product) => (
-          <li key={product.id}>
-            {product.name}{" "}
-            <button onClick={() => removeFromFavorites(product.id)}>
+        {favorites.map((item) => (
+          <li key={item.id}>
+            {item.name}{" "}
+            <button onClick={() => removeFromFavorites(item.id)}>
               Remove from Favorites
             </button>
           </li>
         ))}
       </ul>
-
-      {/* דוגמה לשימוש בקומפוננטה Favorite */}
-      <FavoriteItem product={someProduct} onAddToFavorites={addToFavorites} />
     </div>
   );
 };
