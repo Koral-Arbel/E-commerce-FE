@@ -5,7 +5,7 @@ import Paper from "@mui/material/Paper";
 import Button from "@mui/material/Button";
 import Cart from "./Cart"; // שים לב לקבל את קומפוננטת ה-Cart
 
-function Home() {
+function Home(props) {
   const [items, setItems] = useState([]);
   const [cart, setCart] = useState([]);
 

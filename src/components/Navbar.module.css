@@ -1,43 +1,50 @@
-.container {
-    margin: 1rem;
-    text-align: center;
-}
+/* Navbar.module.css */
 
 .nav {
-    background-color: #333;
-    color: white;
-    display: flex;
-    justify-content: space-between;
-    align-items: stretch;
-    gap: 2rem;
-    padding: 0 1rem;
+  background-color: #333;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+  gap: 2rem;
+  padding: 1.5rem 2rem; /* שינוי קטן בפדינג מעלה ומטה */
 }
 
 .site-title {
-    font-size: 2rem;
+  font-size: 2rem;
+  font-weight: bold; /* הוספת קודם כל כותבים בולד */
 }
 
+/* השאלה הכללית: כיצד תרצה לשנות את הגובה? */
 .nav ul {
-    padding: 0;
-    margin: 0;
-    list-style: none;
-    display: flex;
-    gap: 1rem;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  display: flex;
+  gap: 1rem;
 }
 
 .nav a {
-    color: inherit;
-    text-decoration: none;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    padding: .25rem;
+  color: inherit;
+  text-decoration: none;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding: 0.25rem;
+  transition: background-color 0.3s ease;
+  font-size: 1.5rem; /* הוספת קודם כל, שינוי בגודל הגופן */
 }
 
 .nav li.active {
-    background-color: #555;
+  background-color: #1490d2;
 }
 
 .nav li:hover {
-    background-color: #777;
+  background-color: #777;
+}
+
+.nav li:hover a {
+  color: #fff;
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+  font-size: 1.3rem; /* שינוי בגודל הגופן בעת התרגשות (hover) */
 }

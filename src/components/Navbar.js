@@ -1,16 +1,35 @@
+import React from "react";
 import { Link, useMatch, useResolvedPath } from "react-router-dom";
+import { faAppleAlt, faHeart } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faUser,
+  faSignInAlt,
+  faShoppingCart,
+} from "@fortawesome/free-solid-svg-icons";
 import classes from "./Navbar.module.css";
+import SearchBar from "./SearchBar";
 
 function Navbar() {
   return (
     <nav className={classes.nav}>
       <Link to="/" className={classes.siteTitle}>
-        Site Name
+        <FontAwesomeIcon icon={faAppleAlt} /> Original Devices
       </Link>
+      <SearchBar />
       <ul>
-        <CustomLink to="/login">Login</CustomLink>
-        <CustomLink to="/signUp">Sign-Up</CustomLink>
-        <CustomLink to="/cart">Cart</CustomLink>
+        <CustomLink to="/login">
+          <FontAwesomeIcon icon={faSignInAlt} /> Login
+        </CustomLink>
+        <CustomLink to="/signUp">
+          <FontAwesomeIcon icon={faUser} /> Sign-Up
+        </CustomLink>
+        <CustomLink to="/cart">
+          <FontAwesomeIcon icon={faShoppingCart} /> Cart
+        </CustomLink>
+        <CustomLink to="/favorite">
+          <FontAwesomeIcon icon={faHeart} /> Favorite
+        </CustomLink>
       </ul>
     </nav>
   );

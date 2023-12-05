@@ -5,6 +5,7 @@ import Home from "./components/Home";
 import Login from "./components/registration/Login";
 import Register from "./components/registration/Register";
 import Cart from "./components/Cart";
+import FavoriteList from "./components/FavoriteList";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signUp" element={<Register />} />
           <Route path="/cart" element={<Cart />} />
+          <Route path="/favorite" element={<FavoriteList />} />
         </Routes>
       </AuthProvider>
     </>
