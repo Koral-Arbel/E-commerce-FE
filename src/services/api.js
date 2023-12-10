@@ -1,14 +1,18 @@
 import { axiosInstance as axios } from "./axiosInstance";
 
-const CREATE_NEW_USER = () => `api/public/user/create`;
+const CREATE_NEW_USER = () => `/user/create`;
 const ALL_ITEMS = () => `api/public/item/all`;
 const ADD_ITEM_TO_CART = () => "orderItem/create";
 const AUTHENTICATE = () => `api/public/authenticate`;
 
 const TEST_API = () => `api/public/test1`;
 
-export const createNewUser = (userBody) => {
-  return axios.post(CREATE_NEW_USER(), userBody);
+export const createNewUser = (params) => {
+  return axios.post(CREATE_NEW_USER(), params);
+};
+
+export const getAllItems = async () => {
+  return axios.get(ALL_ITEMS());
 };
 
 export const addItemToCart = (bodyParam, jwt) => {
@@ -19,8 +23,8 @@ export const addItemToCart = (bodyParam, jwt) => {
   });
 };
 
-export const authenticate = (userBody) => {
-  return axios.post(AUTHENTICATE(), userBody);
+export const authenticate = (params) => {
+  return axios.post(AUTHENTICATE(), params);
 };
 
 export const testAuthenticatedApi = (params) => {
