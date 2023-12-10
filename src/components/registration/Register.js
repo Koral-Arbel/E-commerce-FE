@@ -5,15 +5,12 @@ import {
   faInfoCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-// import axios from "axios";
 import classes from "./Register.module.css";
 import { createNewUser } from "../../services/api";
 import { Link } from "react-router-dom";
 
 const USER_REGEX = /^[A-z][A-z0-9-_]{3,23}$/;
 const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
-
-const REGISTER_URL = "/register";
 
 const Register = () => {
   const userRef = useRef();
@@ -31,7 +28,6 @@ const Register = () => {
   const [validMatch, setValidMatch] = useState(false);
   const [matchFocus, setMatchFocus] = useState(false);
 
-  const [username, setUsername] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -76,14 +72,24 @@ const Register = () => {
       const newUserBody = {
         username: user,
         password: pwd,
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        phone: phone,
+        fullAddress: fullAddress,
       };
-      const response = await createNewUser(newUserBody);
+      await createNewUser(newUserBody);
       setSuccess(true);
 
       //clear state and controlled inputs
       setUser("");
       setPwd("");
       setMatchPwd("");
+      setFirstName("");
+      setLastName("");
+      setEmail("");
+      setPhone("");
+      setFullAddress("");
     } catch (err) {
       if (!err.response) {
         setErrMsg("No Server Response");
@@ -306,8 +312,8 @@ const Register = () => {
               id="username"
               ref={userRef}
               autoComplete="off"
-              onChange={(e) => setUsername(e.target.value)}
-              value={username}
+              onChange={(e) => setUser(e.target.value)}
+              value={user}
               required
               // when user focus on the input we want to set the userFocus to true
               onFocus={() => setUserFocus(true)}
@@ -403,9 +409,7 @@ const Register = () => {
               Must match the first password input field.
             </p>
 
-            <button
-              disabled={!validName || !validPwd || !validMatch ? true : false}
-            >
+            <button disabled={!validName || !validPwd || !validMatch}>
               Sign Up
             </button>
           </form>
@@ -413,7 +417,6 @@ const Register = () => {
             Already registered?
             <br />
             <span className={classes.line}>
-              {/*put router link here*/}
               <Link to={"/login"}>Sign In</Link>
             </span>
           </p>

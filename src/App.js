@@ -6,6 +6,7 @@ import Login from "./components/registration/Login";
 import Register from "./components/registration/Register";
 import Cart from "./components/Cart";
 import FavoriteList from "./components/FavoriteList";
+import UserInfo from "./components/UserInfo";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
           <Route path="/signUp" element={<Register />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/favorite" element={<FavoriteList />} />
+          <Route path="/userInfo" element={<UserInfo />} />
         </Routes>
       </AuthProvider>
     </>
