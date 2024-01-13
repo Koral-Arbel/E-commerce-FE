@@ -3,10 +3,10 @@ import { createContext, useState } from "react";
 const ItemsContext = createContext({});
 
 export const ItemsProvider = ({ children }) => {
-  const [allItems, setAllItems] = useState([]);
+  const [Items, setItems] = useState([]);
 
   return (
-    <ItemsContext.Provider value={{ allItems, setAllItems }}>
+    <ItemsContext.Provider value={{ Items, setItems }}>
       {children}
     </ItemsContext.Provider>
   );

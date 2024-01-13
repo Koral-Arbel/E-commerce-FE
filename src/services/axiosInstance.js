@@ -1,9 +1,9 @@
-import axios from 'axios';
+import axios from "axios";
 
-let url = 'http://localhost:8080';
+let url = "http://localhost:8080";
 
 export const axiosConfig = {
-    baseURL: url
+  baseURL: url,
 };
 axios.defaults.withCredentials = false;
 

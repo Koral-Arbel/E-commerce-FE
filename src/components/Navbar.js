@@ -10,7 +10,7 @@ import {
 import classes from "./Navbar.module.css";
 import SearchBar from "./SearchBar";
 
-function Navbar() {
+function Navbar({ user }) {
   return (
     <nav className={classes.nav}>
       <Link to="/" className={classes.siteTitle}>
@@ -30,6 +30,9 @@ function Navbar() {
         <CustomLink to="/favorite">
           <FontAwesomeIcon icon={faHeart} /> Favorite
         </CustomLink>
+        <CustomLink to="/profile">
+          <FontAwesomeIcon icon={faUser} /> Profile
+        </CustomLink>
       </ul>
     </nav>
   );
@@ -40,7 +43,11 @@ function CustomLink({ to, children, ...props }) {
   const isActive = useMatch({ path: resolvedPath.pathname, end: true });
 
   return (
-    <li className={isActive ? classes.active : ""}>
+    <li
+      className={
+        isActive ? `${classes.active} ${classes.navItem}` : classes.navItem
+      }
+    >
       <Link to={to} {...props}>
         {children}
       </Link>

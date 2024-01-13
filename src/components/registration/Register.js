@@ -14,6 +14,13 @@ const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
 
 const Register = () => {
   const userRef = useRef();
+  const firstNameRef = useRef();
+  const lastNameRef = useRef();
+  const emailRef = useRef();
+  const phoneRef = useRef();
+  const fullAddressRef = useRef();
+  const passwordRef = useRef();
+  const confirmPwdRef = useRef();
   const errRef = useRef();
 
   const [user, setUser] = useState("");
@@ -37,31 +44,25 @@ const Register = () => {
   const [errMsg, setErrMsg] = useState("");
   const [success, setSuccess] = useState(false);
 
-  // when component load we set the focus on the userInput top be on
   useEffect(() => {
     userRef.current.focus();
   }, []);
 
-  // every time the user state change we want to validate the user input with the regex
   useEffect(() => {
     setValidName(USER_REGEX.test(user));
   }, [user]);
 
-  // every time the password or the match password change we want to validate the password with the regex
-  // and validate that the matched password is indeed match the password
   useEffect(() => {
     setValidPwd(PWD_REGEX.test(pwd));
     setValidMatch(pwd === matchPwd);
   }, [pwd, matchPwd]);
 
-  // every time we change any input we don't want to show error massege
   useEffect(() => {
     setErrMsg("");
   }, [user, pwd, matchPwd]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // if button enabled with JS hack
     const v1 = USER_REGEX.test(user);
     const v2 = PWD_REGEX.test(pwd);
     if (!v1 || !v2) {
@@ -78,10 +79,9 @@ const Register = () => {
         phone: phone,
         fullAddress: fullAddress,
       };
-      await createNewUser(newUserBody);
+      const response = await createNewUser(newUserBody);
       setSuccess(true);
 
-      //clear state and controlled inputs
       setUser("");
       setPwd("");
       setMatchPwd("");
@@ -135,20 +135,18 @@ const Register = () => {
             <input
               type="text"
               id="firstName"
-              ref={userRef}
+              ref={firstNameRef}
               autoComplete="off"
               onChange={(e) => setFirstName(e.target.value)}
               value={firstName}
               required
-              // when user focus on the input we want to set the userFocus to true
               onFocus={() => setUserFocus(true)}
-              // when user leave the input (blur) we want to set the userFocus to false
               onBlur={() => setUserFocus(false)}
             />
             <p
               id="uidnote"
               className={
-                userFocus && user && !validName
+                userFocus && firstName && !validName
                   ? classes.instructions
                   : classes.offscreen
               }
@@ -170,20 +168,18 @@ const Register = () => {
             <input
               type="text"
               id="lastName"
-              ref={userRef}
+              ref={lastNameRef}
               autoComplete="off"
               onChange={(e) => setLastName(e.target.value)}
               value={lastName}
               required
-              // when user focus on the input we want to set the userFocus to true
               onFocus={() => setUserFocus(true)}
-              // when user leave the input (blur) we want to set the userFocus to false
               onBlur={() => setUserFocus(false)}
             />
             <p
               id="uidnote"
               className={
-                userFocus && user && !validName
+                userFocus && lastName && !validName
                   ? classes.instructions
                   : classes.offscreen
               }
@@ -205,20 +201,18 @@ const Register = () => {
             <input
               type="text"
               id="email"
-              ref={userRef}
+              ref={emailRef}
               autoComplete="off"
               onChange={(e) => setEmail(e.target.value)}
               value={email}
               required
-              // when user focus on the input we want to set the userFocus to true
               onFocus={() => setUserFocus(true)}
-              // when user leave the input (blur) we want to set the userFocus to false
               onBlur={() => setUserFocus(false)}
             />
             <p
               id="uidnote"
               className={
-                userFocus && user && !validName
+                userFocus && email && !validName
                   ? classes.instructions
                   : classes.offscreen
               }
@@ -240,20 +234,18 @@ const Register = () => {
             <input
               type="text"
               id="phone"
-              ref={userRef}
+              ref={phoneRef}
               autoComplete="off"
               onChange={(e) => setPhone(e.target.value)}
               value={phone}
               required
-              // when user focus on the input we want to set the userFocus to true
               onFocus={() => setUserFocus(true)}
-              // when user leave the input (blur) we want to set the userFocus to false
               onBlur={() => setUserFocus(false)}
             />
             <p
               id="uidnote"
               className={
-                userFocus && user && !validName
+                userFocus && phone && !validName
                   ? classes.instructions
                   : classes.offscreen
               }
@@ -275,20 +267,18 @@ const Register = () => {
             <input
               type="text"
               id="fullAddress"
-              ref={userRef}
+              ref={fullAddressRef}
               autoComplete="off"
               onChange={(e) => setFullAddress(e.target.value)}
               value={fullAddress}
               required
-              // when user focus on the input we want to set the userFocus to true
               onFocus={() => setUserFocus(true)}
-              // when user leave the input (blur) we want to set the userFocus to false
               onBlur={() => setUserFocus(false)}
             />
             <p
               id="uidnote"
               className={
-                userFocus && user && !validName
+                userFocus && fullAddress && !validName
                   ? classes.instructions
                   : classes.offscreen
               }
@@ -315,9 +305,7 @@ const Register = () => {
               onChange={(e) => setUser(e.target.value)}
               value={user}
               required
-              // when user focus on the input we want to set the userFocus to true
               onFocus={() => setUserFocus(true)}
-              // when user leave the input (blur) we want to set the userFocus to false
               onBlur={() => setUserFocus(false)}
             />
             <p
@@ -350,6 +338,7 @@ const Register = () => {
             <input
               type="password"
               id="password"
+              ref={passwordRef}
               onChange={(e) => setPwd(e.target.value)}
               value={pwd}
               required
@@ -365,7 +354,7 @@ const Register = () => {
               <FontAwesomeIcon icon={faInfoCircle} />
               8 to 24 characters.
               <br />
-              Must include uppercase and lowercase letters, a number and a
+              Must include uppercase and lowercase letters, a number, and a
               special character.
               <br />
               Allowed special characters: <span>!</span>{" "}
@@ -391,6 +380,7 @@ const Register = () => {
             <input
               type="password"
               id="confirm_pwd"
+              ref={confirmPwdRef}
               onChange={(e) => setMatchPwd(e.target.value)}
               value={matchPwd}
               required

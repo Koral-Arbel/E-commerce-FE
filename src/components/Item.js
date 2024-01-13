@@ -1,44 +1,52 @@
-import React, { useEffect, useState } from "react";
-import ItemCard from "./ItemCard";
+import React, { useContext } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faHeart, faCircle } from "@fortawesome/free-solid-svg-icons";
+import FavouritesContext from "./context/FavoriteContext";
 
-function Item(props) {
-  const [items, setItems] = useState();
-  const [error, setError] = useState("");
+function Item({
+  items,
+  handleRemoveItemFromFavoriteList,
+  handleProducToFavorieList,
+  handleAddItemToCart,
+}) {
+  const { title, price, available_stock } = item;
+  const { favoriteList } = useContext(FavouritesContext);
 
-  const getApiData = async () => {
-    try {
-      const response = await fetch("http://localhost:8080/api/public/item/all");
-      const data = await response.json();
-      setItems(data);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      setError("Error fetching data");
-    }
+  const renderFavoriteButton = () => {
+    const isInFavorite = favoriteList.some(
+      (favoriteItem) => favoriteItem.name === title
+    );
+    return isInFavorite ? (
+      <FontAwesomeIcon
+        icon={faHeart}
+        className="product-wish-btn"
+        onClick={() => handleRemoveItemFromFavoriteList(item)}
+      />
+    ) : (
+      <FontAwesomeIcon
+        icon={faCircle}
+        className="product-wish-btn"
+        onClick={() => handleProducToFavorieList(item)}
+      />
+    );
   };
 
-  useEffect(() => {
-    getApiData();
-  }, []);
+  const renderProductImage = () => (
+    <div className="product-img-container">
+      <img src={item.photo} alt={title} />
+    </div>
+  );
 
   return (
-    <div className="image-container">
-      <br />
-      <div>
-        <h1>BUY NOW:</h1>
-        <div className="image-container">
-          {error && <h3>{error}</h3>}
-          {items &&
-            items.map((item) => (
-              <ItemCard
-                key={item.itemId}
-                title={item.title}
-                photo={item.photo}
-                price={item.price}
-                availableStock={item.availableStock}
-              />
-            ))}
+    <div>
+      {items.map((item) => (
+        <div key={item.id}>
+          <p>{item.title}</p>
+          <button onClick={() => handleAddItemToCart(item.id)}>
+            Add to Cart
+          </button>
         </div>
-      </div>
+      ))}
     </div>
   );
 }
