@@ -16,7 +16,6 @@ import UserProfile from "./components/userRegistered/UserProfile";
 import {
   addFavoriteItem,
   addItemToCart,
-  getAllItems,
   getOpenOrder,
   removeFavoriteItem,
 } from "./services/api";

@@ -1,15 +1,20 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
 import Button from "@mui/material/Button";
-import Axios from "axios";
 import AuthContext from "./context/AuthProvider";
-import { getOpenOrder, createNewOrder, addItemToCart } from "../services/api";
+import {
+  getOpenOrder,
+  createNewOrder,
+  addItemToCart,
+  getAllItems,
+  authenticate,
+} from "../services/api";
+import FavouritesContext from "./context/FavoriteContext";
 
 function Home() {
-  const authContext = useContext(AuthContext);
-  const { auth } = authContext;
-
+  const { auth, setAuth } = useContext(AuthContext);
+  const { favoriteItem } = useContext(FavouritesContext);
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -20,7 +25,7 @@ function Home() {
 
   const fetchItems = async () => {
     try {
-      const response = await Axios.get("http://localhost:8080/item/all");
+      const response = await getAllItems();
       setItems(response.data);
       setLoading(false);
     } catch (error) {
@@ -30,34 +35,33 @@ function Home() {
   };
 
   const handleAddItemToCart = async (itemId) => {
-    try {
-      // Check if the user is logged in and has a valid auth object
-      if (auth && auth.token && auth.userId) {
-        // Check if the user has an open order
-        const openOrderResponse = await getOpenOrder(auth.userId, auth.token);
-        const orderId = openOrderResponse.data.id;
+    console.log("Auth in handleAddItemToCart:", auth);
 
-        // If user has an open order, add the item to the order
+    try {
+      if (auth?.token && auth?.userId) {
+        const openOrderResponse = await getOpenOrder(auth.userId, auth.token);
+        const orderId = openOrderResponse.data?.id || null;
+
         if (orderId) {
           await addItemToCart(orderId, itemId, auth.token);
           console.log("Item added to the order");
         } else {
-          // If user doesn't have an open order, create a new order and add the item
           const newOrderResponse = await createNewOrder(
             auth.userId,
             itemId,
             auth.token
           );
+
+          if (newOrderResponse.error) {
+            console.error("Error creating new order:", newOrderResponse.error);
+            return;
+          }
+
           console.log(
             "New order created and item added:",
             newOrderResponse.data
           );
         }
-      } else {
-        console.log(
-          "User is not logged in or missing required auth properties."
-        );
-        // Redirect to login page or handle as per your app's logic
       }
     } catch (error) {
       console.error("Error adding item to the order:", error);
@@ -66,11 +70,29 @@ function Home() {
 
   const handleAddItemToFavorites = async (itemId) => {
     try {
-      // Add item to favorites using your API
-      // (Assuming you have a corresponding API endpoint for this)
-      console.log(
-        `Item ${itemId} added to favorites for user ${auth.user.username}`
-      );
+      if (auth?.user?.username) {
+        if (Array.isArray(favoriteItem)) {
+          const isInArray = favoriteItem.some(
+            (favItem) => favItem.id === itemId
+          );
+
+          if (!isInArray) {
+            console.log(
+              `Item ${itemId} added to favorites for user ${auth.user.username}`
+            );
+          } else {
+            console.log(
+              `Item ${itemId} is already in favorites for user ${auth.user.username}`
+            );
+          }
+        } else {
+          console.error("favoriteItem is not an array.");
+        }
+      } else {
+        console.log(
+          "User is not logged in or missing required user properties."
+        );
+      }
     } catch (error) {
       console.error("Error adding item to favorites:", error);
     }

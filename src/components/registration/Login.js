@@ -17,13 +17,8 @@ function Login() {
 
   const [user, setUser] = useState("");
   const [pwd, setPwd] = useState("");
-
   const [errMsg, setErrMsg] = useState("");
   const [success, setSuccess] = useState(false);
-
-  useEffect(() => {
-    userRef.current.focus();
-  }, []);
 
   useEffect(() => {
     setErrMsg("");
@@ -37,9 +32,9 @@ function Login() {
         password: pwd,
       };
       const response = await authenticate(userBody);
-      setAuth(response.data);
       setSuccess(true);
       setAuth(response.data.jwt);
+      console.log("Token stored:", response.data.jwt); // תדפיס את הטוקן ל-console
       setUser("");
       setPwd("");
     } catch (err) {

@@ -9,7 +9,7 @@ function Item({
   handleProducToFavorieList,
   handleAddItemToCart,
 }) {
-  const { title, price, available_stock } = item;
+  const { title, price, available_stock } = items;
   const { favoriteList } = useContext(FavouritesContext);
 
   const renderFavoriteButton = () => {
@@ -20,13 +20,13 @@ function Item({
       <FontAwesomeIcon
         icon={faHeart}
         className="product-wish-btn"
-        onClick={() => handleRemoveItemFromFavoriteList(item)}
+        onClick={() => handleRemoveItemFromFavoriteList(items)}
       />
     ) : (
       <FontAwesomeIcon
         icon={faCircle}
         className="product-wish-btn"
-        onClick={() => handleProducToFavorieList(item)}
+        onClick={() => handleProducToFavorieList(items)}
       />
     );
   };
