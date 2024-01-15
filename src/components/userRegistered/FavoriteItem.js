@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { getFavoriteItems } from "../services/api";
 import AuthContext from "./AuthContext";
 
-function Favorite() {
+function FavoriteItem() {
   const { auth } = useContext(AuthContext);
   const [favoriteItems, setFavoriteItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -10,8 +10,9 @@ function Favorite() {
   useEffect(() => {
     const fetchFavoriteItems = async () => {
       try {
-        const items = await getFavoriteItems(auth);
-        setFavoriteItems(items);
+        console.log("auth object:", auth);
+        const favoriteItems = await getFavoriteItems(auth);
+        setFavoriteItems(favoriteItems); // יש לוודא שזהו המבנה הנכון שמתקבל מהשרת
         setLoading(false);
       } catch (error) {
         console.error("Error fetching favorite items:", error);
@@ -41,4 +42,4 @@ function Favorite() {
   );
 }
 
-export default Favorite;
+export default FavoriteItem;

@@ -32,8 +32,10 @@ function Login() {
         password: pwd,
       };
       const response = await authenticate(userBody);
+
+      // אם יש צורך לעדכן את הסטייט רק אחרי ההצלחה של authenticate
+      setAuth({ username: user, token: response.data.jwt, isLoggedIn: true });
       setSuccess(true);
-      setAuth(response.data.jwt);
       setUser("");
       setPwd("");
     } catch (err) {
@@ -47,6 +49,7 @@ function Login() {
       errRef.current.focus();
     }
   };
+
   return (
     <Fragment>
       {success ? (

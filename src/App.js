@@ -21,6 +21,7 @@ import {
 } from "./services/api";
 import axios from "axios";
 import Home from "./components/Home";
+import Logout from "./components/registration/Logout";
 
 function App() {
   const { auth } = useContext(AuthContext);
@@ -100,21 +101,11 @@ function App() {
       {errMsg && <p style={{ color: "red" }}>{errMsg}</p>}
 
       <AuthProvider>
-        <Navbar handleAddItemToCart={handleAddItemToCart} />
+        <Navbar />
         <Routes>
-          <Route
-            path="/"
-            element={
-              <Home
-                handleAddItemToCart={handleAddItemToCart}
-                handleAddItemToFavorites={handleAddItemToFavorites}
-                handleRemoveItemFromFavoriteList={
-                  handleRemoveItemFromFavoriteList
-                }
-              />
-            }
-          />
+          <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/logout" element={<Logout />} />
           <Route path="/signUp" element={<Register />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/profile" element={<UserProfile />} />

@@ -11,12 +11,13 @@ import {
   getUserById,
   removeItemFromCart,
 } from "../services/api";
+import CartContext from "../components/context/CartContext";
 
 function Cart() {
-  const { auth, setAuth } = useContext(AuthContext);
-  const [cart, setCart] = useState([]);
   const [loading, setLoading] = useState(true);
   const [addedItems, setAddedItems] = useState([]);
+  const { cart, setCart } = useContext(CartContext);
+  const { auth } = useContext(AuthContext);
 
   useEffect(() => {
     if (auth) {
@@ -26,11 +27,13 @@ function Cart() {
 
   const handleCheckTempOrder = async () => {
     try {
-      const response = await getOpenOrder(auth);
+      console.log(auth);
+      const response = await getOpenOrder(auth.userId);
 
       console.log("Response status:", response.status);
       console.log("Response headers:", response.headers);
       console.log("Server response data:", await response.text());
+      console.log("my order:", cart);
 
       if (!response.ok) {
         console.error("Failed to fetch cart items");

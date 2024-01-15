@@ -14,8 +14,8 @@ ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>
       <ItemsProvider>
-        <UserProfileProvider>
-          <AuthProvider>
+        <AuthProvider>
+          <UserProfileProvider>
             <CartProvider>
               <FavouritesProvider>
                 <OrdersProvider>
@@ -23,8 +23,8 @@ ReactDOM.render(
                 </OrdersProvider>
               </FavouritesProvider>
             </CartProvider>
-          </AuthProvider>
-        </UserProfileProvider>
+          </UserProfileProvider>
+        </AuthProvider>
       </ItemsProvider>
     </BrowserRouter>
   </React.StrictMode>,

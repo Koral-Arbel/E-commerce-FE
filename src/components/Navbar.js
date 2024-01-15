@@ -1,6 +1,10 @@
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link, useMatch, useResolvedPath } from "react-router-dom";
-import { faAppleAlt, faHeart } from "@fortawesome/free-solid-svg-icons";
+import {
+  faAppleAlt,
+  faHeart,
+  faSignOutAlt,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faUser,
@@ -9,8 +13,18 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import classes from "./Navbar.module.css";
 import SearchBar from "./SearchBar";
+import AuthContext from "./context/AuthProvider";
 
-function Navbar({ user }) {
+function Navbar() {
+  const { auth } = useContext(AuthContext);
+  const [isLoggedIn, setLoggedIn] = useState(auth.isLoggedIn);
+
+  useEffect(() => {
+    if (auth.isLoggedIn !== isLoggedIn) {
+      setLoggedIn(auth.isLoggedIn);
+    }
+  }, [auth.isLoggedIn]);
+
   return (
     <nav className={classes.nav}>
       <Link to="/" className={classes.siteTitle}>
@@ -18,21 +32,32 @@ function Navbar({ user }) {
       </Link>
       <SearchBar />
       <ul>
-        <CustomLink to="/login">
-          <FontAwesomeIcon icon={faSignInAlt} /> Login
-        </CustomLink>
-        <CustomLink to="/signUp">
-          <FontAwesomeIcon icon={faUser} /> Sign-Up
-        </CustomLink>
-        <CustomLink to="/cart">
-          <FontAwesomeIcon icon={faShoppingCart} /> Cart
-        </CustomLink>
-        <CustomLink to="/favorite">
-          <FontAwesomeIcon icon={faHeart} /> Favorite
-        </CustomLink>
-        <CustomLink to="/profile">
-          <FontAwesomeIcon icon={faUser} /> Profile
-        </CustomLink>
+        {auth.isLoggedIn ? (
+          <>
+            <li className={classes.greeting}>Hello, {auth.username}!</li>
+            <CustomLink to="/logout">
+              <FontAwesomeIcon icon={faSignOutAlt} /> Logout
+            </CustomLink>
+            <CustomLink to="/cart">
+              <FontAwesomeIcon icon={faShoppingCart} /> Cart
+            </CustomLink>
+            <CustomLink to="/favorite">
+              <FontAwesomeIcon icon={faHeart} /> Favorite
+            </CustomLink>
+            <CustomLink to="/profile">
+              <FontAwesomeIcon icon={faUser} /> Profile
+            </CustomLink>
+          </>
+        ) : (
+          <>
+            <CustomLink to="/login">
+              <FontAwesomeIcon icon={faSignInAlt} /> Login
+            </CustomLink>
+            <CustomLink to="/signUp">
+              <FontAwesomeIcon icon={faUser} /> Sign-Up
+            </CustomLink>
+          </>
+        )}
       </ul>
     </nav>
   );
