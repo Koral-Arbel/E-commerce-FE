@@ -1,9 +1,9 @@
 import React, {
   useRef,
   useState,
+  useContext,
   useEffect,
   Fragment,
-  useContext,
 } from "react";
 import classes from "./Login.module.css";
 import { authenticate } from "../../services/api";
@@ -34,7 +34,6 @@ function Login() {
       const response = await authenticate(userBody);
       setSuccess(true);
       setAuth(response.data.jwt);
-      console.log("Token stored:", response.data.jwt); // תדפיס את הטוקן ל-console
       setUser("");
       setPwd("");
     } catch (err) {
@@ -48,7 +47,6 @@ function Login() {
       errRef.current.focus();
     }
   };
-
   return (
     <Fragment>
       {success ? (

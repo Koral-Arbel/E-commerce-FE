@@ -1,11 +1,14 @@
-import React from "react";
-import Navbar from "../Navbar";
+import React, { useContext } from "react";
+import AuthContext from "./context/AuthProvider";
 
 function Header(props) {
+  const { auth } = useContext(AuthContext);
+
   return (
     <header>
-      <Navbar handleAddItemToCart={props.handleAddItemToCart} />
-      <div className="header-main-banner"></div>
+      <div>
+        <h1>Hello, {auth?.username}!</h1>
+      </div>
     </header>
   );
 }

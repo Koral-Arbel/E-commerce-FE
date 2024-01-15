@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import Navbar from "./components/Navbar";
-import Home from "./components/Home";
 import Login from "./components/registration/Login";
 import Register from "./components/registration/Register";
 import Cart from "./components/Cart";
@@ -16,14 +15,16 @@ import UserProfile from "./components/userRegistered/UserProfile";
 import {
   addFavoriteItem,
   addItemToCart,
+  getAllItems,
   getOpenOrder,
   removeFavoriteItem,
 } from "./services/api";
 import axios from "axios";
+import Home from "./components/Home";
 
 function App() {
   const { auth } = useContext(AuthContext);
-  const { userProfile } = useContext(UserProfileContext);
+  const { userDetails } = useContext(UserProfileContext);
   const { cart, setCart } = useContext(CartContext);
   const { favoriteItem, setFavoriteItem } = useContext(FavouritesContext);
   const { items, setItems } = useContext(ItemsContext);
@@ -42,14 +43,6 @@ function App() {
     );
   };
 
-  // useEffect(() => {
-  //   // Fetch items on cart change
-  //   getAllItems().then((res) => {
-  //     console.log("Items fetched:", res.data);
-  //     setItems(res.data);
-  //   });
-  // }, [cart, items]);
-
   // Add to favorites
   const handleAddItemToFavorites = async (item) => {
     let isInArray = false;
@@ -59,13 +52,13 @@ function App() {
 
     if (!isInArray) {
       const bodyParams = {
-        userId: userProfile.user.id,
+        userId: userDetails.user.id,
         itemId: item.id,
       };
 
       try {
         const res = await addFavoriteItem(bodyParams, auth);
-        setFavoriteItem([...favoriteItem, { ...item, itemId: res.data }]);
+        setFavoriteItem([...favoriteItem, { ...item, id: res.data }]);
       } catch (err) {
         if (!err.response) {
           setErrMsg("No Server Response");
@@ -74,41 +67,19 @@ function App() {
     }
   };
 
-  // Add to cart
-
-  const createNewOrder = async () => {
-    try {
-      // Check if an open order exists for the user
-      const orderId = await getOpenOrder();
-
-      if (orderId) {
-        return orderId;
-      }
-
-      // If no open order, create a new one
-      const response = await axios.post(createNewOrder, {});
-      return response.data; // Assuming the new order ID is returned in the response
-    } catch (error) {
-      console.error("Error creating new order:", error);
-      throw error;
-    }
-  };
-
   const handleAddItemToCart = async (item) => {
     let isInArray = false;
-    cart.forEach((cartItem) => {
-      if (cartItem.id === item.id) isInArray = true;
+    cart.forEach((prd) => {
+      if (prd.id === item.id) isInArray = true;
     });
-
     if (!isInArray) {
       const bodyParams = {
         orderId: null,
-        userId: userProfile.user.id,
+        userId: userDetails.user.id,
         itemId: item.id,
         quantity: 1,
         price: item.price,
       };
-
       try {
         const res = await addItemToCart(bodyParams, auth);
         setCart([...cart, { ...item, id: res.data }]);
@@ -116,7 +87,7 @@ function App() {
         if (!err.response) {
           setErrMsg("No Server Response");
         } else if (err.response.status === 500) {
-          setErrMsg("Item Out Of Stock");
+          setErrMsg("Product Out Of Stock");
         } else {
           setErrMsg("Authentication Failed");
         }
@@ -129,13 +100,12 @@ function App() {
       {errMsg && <p style={{ color: "red" }}>{errMsg}</p>}
 
       <AuthProvider>
-        <Navbar />
+        <Navbar handleAddItemToCart={handleAddItemToCart} />
         <Routes>
           <Route
             path="/"
             element={
               <Home
-                createNewOrder={createNewOrder}
                 handleAddItemToCart={handleAddItemToCart}
                 handleAddItemToFavorites={handleAddItemToFavorites}
                 handleRemoveItemFromFavoriteList={

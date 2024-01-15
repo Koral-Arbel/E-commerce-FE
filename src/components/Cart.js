@@ -2,26 +2,31 @@ import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import CartItem from "./CartItem";
 import AuthContext from "./context/AuthProvider";
-import { addItemToCart, removeItemFromCart } from "../services/api";
+import {
+  addItemToCart,
+  authenticate,
+  createNewOrder,
+  deleteOrderItem,
+  getOpenOrder,
+  getUserById,
+  removeItemFromCart,
+} from "../services/api";
 
 function Cart() {
-  const { auth } = useContext(AuthContext);
-  const [cartItems, setCartItems] = useState([]);
+  const { auth, setAuth } = useContext(AuthContext);
+  const [cart, setCart] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [addedItems, setAddedItems] = useState([]);
 
   useEffect(() => {
     if (auth) {
-      fetchCartItems();
+      handleCheckTempOrder();
     }
   }, [auth]);
 
-  const fetchCartItems = async () => {
+  const handleCheckTempOrder = async () => {
     try {
-      const response = await fetch(addItemToCart, {
-        headers: {
-          Authorization: `Bearer ${auth.token}`,
-        },
-      });
+      const response = await getOpenOrder(auth);
 
       console.log("Response status:", response.status);
       console.log("Response headers:", response.headers);
@@ -35,7 +40,7 @@ function Cart() {
       const data = await response.json();
       console.log("Data received:", data);
 
-      setCartItems(data);
+      setCart(data);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching cart items:", error);
@@ -45,7 +50,7 @@ function Cart() {
 
   const handleRemoveItem = async (itemToRemove) => {
     try {
-      const response = await fetch(removeItemFromCart, {
+      const response = await fetch(deleteOrderItem, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -58,7 +63,7 @@ function Cart() {
         throw new Error("Failed to remove item from cart");
       }
 
-      setCartItems((prevItems) =>
+      setCart((prevItems) =>
         prevItems.filter((item) => item.id !== itemToRemove.id)
       );
     } catch (error) {
@@ -75,10 +80,10 @@ function Cart() {
             <p>Loading...</p>
           ) : (
             <>
-              {cartItems.length > 0 ? (
+              {cart.length > 0 ? (
                 <>
                   <ul>
-                    {cartItems.map((item) => (
+                    {cart.map((item) => (
                       <CartItem
                         key={item.id}
                         item={item}

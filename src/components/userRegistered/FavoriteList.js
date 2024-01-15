@@ -1,26 +1,48 @@
-import React, { useContext } from "react";
-import FavouritesContext from "../context/FavoriteContext";
-import FavoriteItem from "./FavoriteItem";
+import React, { useEffect, useState } from "react";
+import { getAllFavoriteItems, removeFavoriteItem } from "../../services/api";
 
-function FavoriteList(props) {
-  const { favorite } = useContext(FavouritesContext);
+const FavoriteList = ({ auth }) => {
+  const [favoriteItems, setFavoriteItems] = useState([]);
 
-  if (!favorite || favorite.length === 0) {
-    return <h2>Favorite List Empty</h2>;
-  }
+  useEffect(() => {
+    const fetchFavoriteItems = async () => {
+      try {
+        const items = await getAllFavoriteItems(auth);
+        setFavoriteItems(items);
+      } catch (error) {
+        console.error("Error fetching favorite items: ", error);
+      }
+    };
+
+    fetchFavoriteItems();
+  }, [auth]);
+
+  const handleRemoveFavoriteItem = async (itemId) => {
+    try {
+      await removeFavoriteItem(itemId, auth);
+      setFavoriteItems((prevItems) =>
+        prevItems.filter((item) => item.itemId !== itemId)
+      );
+    } catch (error) {
+      console.error("Error removing favorite item: ", error);
+    }
+  };
 
   return (
     <div>
-      {favorite.map((item) => (
-        <FavoriteItem
-          key={item.id}
-          item={item}
-          handleAddItemToCart={props.handleAddItemToCart}
-          handleRemoveItem={props.handleRemoveItem}
-        />
-      ))}
+      <h2>Favorite Items</h2>
+      <ul>
+        {favoriteItems.map((item) => (
+          <li key={item.itemId}>
+            {item.title}
+            <button onClick={() => handleRemoveFavoriteItem(item.itemId)}>
+              Remove
+            </button>
+          </li>
+        ))}
+      </ul>
     </div>
   );
-}
+};
 
 export default FavoriteList;

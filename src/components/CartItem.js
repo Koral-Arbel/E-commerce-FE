@@ -13,7 +13,7 @@ function CartItem({ item, onRemoveItem }) {
   return (
     <ListItem>
       <ListItemAvatar>
-        <Avatar alt={item.title} src={item.image} />
+        <Avatar alt={item.title} src={item.photo} />
       </ListItemAvatar>
       <ListItemText
         primary={item.title}

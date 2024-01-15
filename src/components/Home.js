@@ -13,11 +13,12 @@ import {
 import FavouritesContext from "./context/FavoriteContext";
 
 function Home() {
-  const { auth, setAuth } = useContext(AuthContext);
+  const { auth } = useContext(AuthContext);
   const { favoriteItem } = useContext(FavouritesContext);
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [addedItems, setAddedItems] = useState([]);
 
   useEffect(() => {
     fetchItems();
@@ -35,54 +36,59 @@ function Home() {
   };
 
   const handleAddItemToCart = async (itemId) => {
-    console.log("Auth in handleAddItemToCart:", auth);
+    if (!addedItems.includes(itemId)) {
+      try {
+        if (auth?.token && auth?.userId) {
+          const openOrderResponse = await getOpenOrder(auth.userId, auth.token);
+          const orderId = openOrderResponse.data?.id || null;
 
-    try {
-      if (auth?.token && auth?.userId) {
-        const openOrderResponse = await getOpenOrder(auth.userId, auth.token);
-        const orderId = openOrderResponse.data?.id || null;
+          if (orderId) {
+            await addItemToCart(orderId, itemId, auth.token);
+            console.log("Item added to the order");
+            setAddedItems((prevItems) => [...prevItems, itemId]);
+          } else {
+            const newOrderResponse = await createNewOrder(
+              auth.userId,
+              itemId,
+              auth.token
+            );
 
-        if (orderId) {
-          await addItemToCart(orderId, itemId, auth.token);
-          console.log("Item added to the order");
-        } else {
-          const newOrderResponse = await createNewOrder(
-            auth.userId,
-            itemId,
-            auth.token
-          );
+            if (newOrderResponse.error) {
+              console.error(
+                "Error creating new order:",
+                newOrderResponse.error
+              );
+              return;
+            }
 
-          if (newOrderResponse.error) {
-            console.error("Error creating new order:", newOrderResponse.error);
-            return;
+            console.log(
+              "New order created and item added:",
+              newOrderResponse.data
+            );
+            setAddedItems((prevItems) => [...prevItems, itemId]);
           }
-
-          console.log(
-            "New order created and item added:",
-            newOrderResponse.data
-          );
         }
+      } catch (error) {
+        console.error("Error adding item to the order:", error);
       }
-    } catch (error) {
-      console.error("Error adding item to the order:", error);
+    } else {
+      console.log("Item is already in the cart");
     }
   };
 
   const handleAddItemToFavorites = async (itemId) => {
     try {
-      if (auth?.user?.username) {
+      if (auth) {
         if (Array.isArray(favoriteItem)) {
           const isInArray = favoriteItem.some(
             (favItem) => favItem.id === itemId
           );
 
           if (!isInArray) {
-            console.log(
-              `Item ${itemId} added to favorites for user ${auth.user.username}`
-            );
+            console.log(`Item ${itemId} added to favorites for user ${auth}`);
           } else {
             console.log(
-              `Item ${itemId} is already in favorites for user ${auth.user.username}`
+              `Item ${itemId} is already in favorites for user ${auth}`
             );
           }
         } else {
@@ -126,10 +132,9 @@ function Home() {
                 height="auto"
               />
               <div style={{ color: "green", fontWeight: "bold" }}>
-                {item.price}
+                Price: ${item.price}
               </div>
               <div>Available: {item.availableStock}</div>
-              <div>Quantity: {item.quantity}</div>
               <Button onClick={() => handleAddItemToCart(item.id)}>
                 Add to Cart
               </Button>
