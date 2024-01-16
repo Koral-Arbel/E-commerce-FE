@@ -1,13 +1,16 @@
-import React, { useContext, useEffect, useState } from "react";
+// UserProfile.js
+
+import { Button, Paper, Typography } from "@mui/material";
 import { deleteUser, getProfileUser } from "../../services/api";
+import { useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import AuthContext from "../context/AuthProvider";
 import UserProfileContext from "../context/UserProfileContext";
-import { useNavigate } from "react-router-dom";
+import styles from "./UserProfile.module.css";
 
 function UserProfile() {
   const { auth, setAuth } = useContext(AuthContext);
   const { userDetails, setUserDetails } = useContext(UserProfileContext);
-
   const [isUserDeleted, setUserDeleted] = useState(false);
   const navigate = useNavigate();
 
@@ -50,26 +53,58 @@ function UserProfile() {
   };
 
   return (
-    <div>
-      <h2>User Profile</h2>
+    <div className={styles["user-profile-container"]}>
+      <Typography variant="h4" className={styles["user-profile-title"]}>
+        User Profile
+      </Typography>
       {userDetails ? (
-        <div>
-          <p>userId: {userDetails.id}</p>
-          <p>Username: {userDetails.username}</p>
-          <p>Email: {userDetails.email}</p>
-          <p>First Name: {userDetails.firstName}</p>
-          <p>Last Name: {userDetails.lastName}</p>
-          <p>Phone: {userDetails.phone}</p>
-          <p>Full Address: {userDetails.fullAddress}</p>
-          <button
-            className="profile-delete-btn"
+        <Paper elevation={1} className={styles["profile-details-paper"]}>
+          <div className={styles["profile-details-row"]}>
+            <Typography variant="body1">
+              <strong>User ID:</strong> {userDetails.id}
+            </Typography>
+          </div>
+          <div className={styles["profile-details-row"]}>
+            <Typography variant="body1">
+              <strong>Username:</strong> {userDetails.username}
+            </Typography>
+          </div>
+          <div className={styles["profile-details-row"]}>
+            <Typography variant="body1">
+              <strong>Email:</strong> {userDetails.email}
+            </Typography>
+          </div>
+          <div className={styles["profile-details-row"]}>
+            <Typography variant="body1">
+              <strong>First Name:</strong> {userDetails.firstName}
+            </Typography>
+          </div>
+          <div className={styles["profile-details-row"]}>
+            <Typography variant="body1">
+              <strong>Last Name:</strong> {userDetails.lastName}
+            </Typography>
+          </div>
+          <div className={styles["profile-details-row"]}>
+            <Typography variant="body1">
+              <strong>Phone:</strong> {userDetails.phone}
+            </Typography>
+          </div>
+          <div className={styles["profile-details-row"]}>
+            <Typography variant="body1">
+              <strong>Full Address:</strong> {userDetails.fullAddress}
+            </Typography>
+          </div>
+          <Button
+            variant="contained"
+            color="secondary"
+            className={styles["profile-delete-btn"]}
             onClick={handleDeleteCustomerBtn}
           >
             Delete Account
-          </button>
-        </div>
+          </Button>
+        </Paper>
       ) : (
-        <p>Loading user profile...</p>
+        <Typography variant="body1">Loading user profile...</Typography>
       )}
     </div>
   );

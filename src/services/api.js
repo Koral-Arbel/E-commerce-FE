@@ -61,9 +61,9 @@ export const getOpenOrder = (userId, jwt) => {
 
 export const getAllItems = async () => axios.get(ALL_ITEMS());
 
-export const addItemToCart = async (userBody, queryParams) => {
+export const addItemToCart = async (userId, queryParams) => {
   try {
-    const response = await axios.post(ADD_ITEM_TO_CART(), userBody, {
+    const response = await axios.post(ADD_ITEM_TO_CART(), userId, {
       params: queryParams,
     });
     return response.data;
@@ -79,19 +79,10 @@ export const deleteOrderItem = (itemId, queryParams) => {
   });
 };
 
-export const getFavoriteItems = async (token) => {
-  try {
-    const response = await axios.get(FAVORITE_ITEMS(), {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching favorite items:", error);
-    throw error;
-  }
-};
+export const getFavoriteItems = (userId, token) =>
+  axios.get(FAVORITE_ITEMS(userId), {
+    params: { Authorization: `Bearer ${token}` },
+  });
 
 export const addFavoriteItem = (bodyParam, jwt) => {
   return axios.post(ADD_FAVORITE_ITEMS(), bodyParam, {

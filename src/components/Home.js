@@ -39,6 +39,7 @@ function Home() {
 
       // שמור את פרטי המשתמש בקונטקסט
       setUserDetails(userProfile);
+      return userProfile;
     } catch (error) {
       console.error("Error fetching user profile:", error);
     }
@@ -56,12 +57,13 @@ function Home() {
       console.log("User ID : ", userDetails.id);
 
       // קריאה לפונקציה שמוסיפה פריט למועדפים
-      await addFavoriteItem({ userId: userId, itemId: itemId }, auth.token);
-
-      // עדכון של הרשימת מועדפים בצד הלקוח
-      setFavoriteItems([...favoriteItems, { itemId: itemId }]);
+      await addFavoriteItem({ userId: userDetails.id, itemId }, auth.token);
+      setFavoriteItems((prevItems) => [...prevItems, { itemId }]);
     } catch (error) {
       console.error("Error adding item to favorites:", error);
+      setError(
+        error.message || "An error occurred while adding item to favorites"
+      );
     }
   };
 

@@ -1,0 +1,49 @@
+/* UserProfile.css */
+
+.user-profile-container {
+  padding: 20px;
+  max-width: 600px;
+  margin: auto;
+}
+
+.profile-details {
+  margin-top: 20px;
+}
+
+.profile-delete-btn {
+  margin-top: 20px;
+}
+
+/* הוספת עיצובים נוספים */
+.user-profile-title {
+  font-size: 1.5em;
+  font-weight: bold;
+  color: #3f51b5;
+  margin-bottom: 20px;
+}
+
+.profile-details-paper {
+  padding: 20px;
+  margin-top: 20px;
+
+  background-color: #f0f0f0; /* רקע אפור בהיר */
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* צל בהיר */
+}
+
+.profile-info {
+  margin-bottom: 10px;
+}
+
+.profile-delete-btn {
+  background-color: #ff1744; /* אדום */
+  color: #fff; /* צבע כתום */
+  &:hover {
+    background-color: #d50000; /* גרסה כהה יותר של אדום בהרמה */
+  }
+  margin-top: 20px;
+}
+
+.profile-details-row {
+  margin-bottom: 10px;
+}
