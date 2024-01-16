@@ -1,3 +1,4 @@
+// Cart.js
 import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import CartItem from "./CartItem";
@@ -8,16 +9,19 @@ import {
   createNewOrder,
   deleteOrderItem,
   getOpenOrder,
+  getProfileUser,
   getUserById,
   removeItemFromCart,
 } from "../services/api";
 import CartContext from "../components/context/CartContext";
+import UserProfileContext from "./context/UserProfileContext";
 
 function Cart() {
   const [loading, setLoading] = useState(true);
   const [addedItems, setAddedItems] = useState([]);
   const { cart, setCart } = useContext(CartContext);
   const { auth } = useContext(AuthContext);
+  const { userDetails, setUserDetails } = useContext(UserProfileContext);
 
   useEffect(() => {
     if (auth) {
@@ -27,8 +31,11 @@ function Cart() {
 
   const handleCheckTempOrder = async () => {
     try {
+      const userProfile = await getProfileUser(auth.username);
+
       console.log(auth);
-      const response = await getOpenOrder(auth.userId);
+      const response = await getOpenOrder(userProfile);
+      console.log(userProfile);
 
       console.log("Response status:", response.status);
       console.log("Response headers:", response.headers);

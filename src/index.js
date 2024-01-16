@@ -13,8 +13,8 @@ import { OrdersProvider } from "./components/context/OrdersContext";
 ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>
-      <ItemsProvider>
-        <AuthProvider>
+      <AuthProvider>
+        <ItemsProvider>
           <UserProfileProvider>
             <CartProvider>
               <FavouritesProvider>
@@ -24,8 +24,8 @@ ReactDOM.render(
               </FavouritesProvider>
             </CartProvider>
           </UserProfileProvider>
-        </AuthProvider>
-      </ItemsProvider>
+        </ItemsProvider>
+      </AuthProvider>
     </BrowserRouter>
   </React.StrictMode>,
   document.getElementById("root")

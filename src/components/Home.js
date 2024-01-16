@@ -3,9 +3,12 @@ import Grid from "@mui/material/Grid";
 import AuthContext from "./context/AuthProvider";
 import { addFavoriteItem, getAllItems, getProfileUser } from "../services/api";
 import Item from "./Item";
+import UserProfileContext from "./context/UserProfileContext";
 
 function Home() {
   const { auth } = useContext(AuthContext);
+  const { userDetails, setUserDetails } = useContext(UserProfileContext);
+
   const [items, setItems] = useState([]);
   const [favoriteItems, setFavoriteItems] = useState([]);
 
@@ -14,6 +17,7 @@ function Home() {
 
   useEffect(() => {
     fetchItems();
+    fetchUserProfile();
   }, []);
 
   const fetchItems = async () => {
@@ -27,6 +31,19 @@ function Home() {
     }
   };
 
+  const fetchUserProfile = async () => {
+    try {
+      // שלוף מידע על המשתמש מהשרת
+      const userProfile = await getProfileUser(auth.username);
+      console.log("User Profile:", userProfile);
+
+      // שמור את פרטי המשתמש בקונטקסט
+      setUserDetails(userProfile);
+    } catch (error) {
+      console.error("Error fetching user profile:", error);
+    }
+  };
+
   const handleAddItemToFavorites = async (itemId) => {
     console.log("Auth details:", auth);
     console.log("Item ID :", itemId);
@@ -34,11 +51,9 @@ function Home() {
     console.log("User USERNAME : ", auth.token);
 
     try {
-      // שלוף מידע על המשתמש מהשרת
-      const userProfile = await getProfileUser(auth.username);
-
       // אם הצלחנו לשלוף את המידע, נשלוף ממנו את המזהה
-      const userId = userProfile.userId;
+      const userId = userDetails.id;
+      console.log("User ID : ", userDetails.id);
 
       // קריאה לפונקציה שמוסיפה פריט למועדפים
       await addFavoriteItem({ userId: userId, itemId: itemId }, auth.token);
@@ -49,6 +64,7 @@ function Home() {
       console.error("Error adding item to favorites:", error);
     }
   };
+
   return (
     <>
       <div style={{ textAlign: "center", margin: "20px 0" }}>

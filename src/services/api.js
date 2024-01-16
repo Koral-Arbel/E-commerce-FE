@@ -9,7 +9,7 @@ const ALL_ITEMS = () => "/item/all";
 const ADD_ITEM_TO_CART = () => "/orderItem/create";
 const DELETE_ORDER_ITEM = (itemId) => `/orderItem/delete/${itemId}`;
 
-const FAVORITE_ITEMS = () => "/favoriteItem/all";
+const FAVORITE_ITEMS = (userId) => `/favoriteItem/all/${userId}`;
 const ADD_FAVORITE_ITEMS = () => "/favoriteItem/itemAddFavorite/";
 const REMOVE_FAVORITE_ITEM = (itemId) => `/favoriteItem/delete/${itemId}`;
 
@@ -24,7 +24,8 @@ export const createNewUser = (userBody) =>
 export const getProfileUser = async (username) => {
   try {
     const response = await axios.get(GET_USER_PROFILE(username));
-    return response.data;
+    const userProfile = { ...response.data, userId: response.data.userId };
+    return userProfile;
   } catch (error) {
     console.error("Error fetching user profile: ", error);
     throw error;
@@ -50,16 +51,12 @@ export const createNewOrder = async (userBody, queryParams) => {
   }
 };
 
-export const getOpenOrder = async (userId, queryParams) => {
-  try {
-    const response = await axios.get(GET_OPEN_ORDER(userId), {
-      params: queryParams,
-    });
-    return response.data;
-  } catch (error) {
-    console.log("Error get open order for user : " + error);
-    throw error;
-  }
+export const getOpenOrder = (userId, jwt) => {
+  return axios.get(GET_OPEN_ORDER(userId), {
+    params: {
+      Authorization: `Bearer ${jwt}`,
+    },
+  });
 };
 
 export const getAllItems = async () => axios.get(ALL_ITEMS());
@@ -82,8 +79,18 @@ export const deleteOrderItem = (itemId, queryParams) => {
   });
 };
 
-export const getFavoriteItems = () => {
-  return axios.get(FAVORITE_ITEMS());
+export const getFavoriteItems = async (token) => {
+  try {
+    const response = await axios.get(FAVORITE_ITEMS(), {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching favorite items:", error);
+    throw error;
+  }
 };
 
 export const addFavoriteItem = (bodyParam, jwt) => {
@@ -94,8 +101,8 @@ export const addFavoriteItem = (bodyParam, jwt) => {
   });
 };
 
-export const removeFavoriteItem = (wishlistProductId, jwt) => {
-  return axios.delete(REMOVE_FAVORITE_ITEM(wishlistProductId), {
+export const removeFavoriteItem = (favoriteItemId, jwt) => {
+  return axios.delete(REMOVE_FAVORITE_ITEM(favoriteItemId), {
     params: {
       Authorization: `Bearer ${jwt}`,
     },
