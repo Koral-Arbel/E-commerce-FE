@@ -1,38 +1,32 @@
 import React, { useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSearch } from "@fortawesome/free-solid-svg-icons";
 
-function SearchBar(props) {
+function SearchBar() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
 
-  const handleSearch = () => {
-    if (!props.items) {
-      console.error("Items are undefined");
-      return;
+  const handleInputChange = (event) => {
+    setSearchTerm(event.target.value);
+  };
+
+  const handleSearch = async () => {
+    try {
+      const searchResults = await searchTerm();
+      console.log("Search results:", searchResults);
+      // כאן תעשה משהו עם תוצאות החיפוש
+    } catch (error) {
+      // כאן תטפל בשגיאה
+      console.error("Error handling search:", error);
     }
-
-    const results = props.items.filter((item) =>
-      item.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-
-    setSearchResults(results); // עדכון הסטייט של התוצאות
   };
 
   return (
-    <div className="search-bar">
+    <div>
       <input
         type="text"
         placeholder="Search..."
         value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
+        onChange={handleInputChange}
       />
-      <button onClick={handleSearch}>
-        <FontAwesomeIcon icon={faSearch} />
-      </button>
-
-      {/* כאן אתה יכול לעדכן את הסטייט של התוצאות דרך props */}
-      {props.updateResults && props.updateResults(searchResults)}
+      <button onClick={handleSearch}>Search</button>
     </div>
   );
 }

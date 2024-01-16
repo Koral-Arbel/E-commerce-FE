@@ -21,9 +21,7 @@ function Item({ item, handleAddItemToCart, handleAddItemToFavorites }) {
           Price: ${item.price}
         </div>
         <div>Available: {item.availableStock}</div>
-        <Button onClick={() => handleAddItemToCart(item.id)}>
-          Add to Cart
-        </Button>
+        <Button onClick={handleAddItemToCart}>Add to Cart</Button>
         <Button onClick={() => handleAddItemToFavorites(item.id)}>
           Add to Favorites
         </Button>

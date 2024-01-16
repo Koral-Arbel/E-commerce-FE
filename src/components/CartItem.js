@@ -1,4 +1,3 @@
-// CartItem.js
 import React from "react";
 import {
   Button,
@@ -10,6 +9,11 @@ import {
 } from "@mui/material";
 
 function CartItem({ item, onRemoveItem }) {
+  // נוסיף בדיקה אם item מוגדר
+  if (!item) {
+    return null; // או ייתכן שאתה רוצה להחזיר משהו אחר
+  }
+
   return (
     <ListItem>
       <ListItemAvatar>
@@ -23,9 +27,12 @@ function CartItem({ item, onRemoveItem }) {
               Price: ${item.price}
             </Typography>
             <br />
-            <Typography component="span" variant="body2" color="text.primary">
-              Quantity: {item.quantity}
-            </Typography>
+            {/* נוסיף בדיקה אם quantity מוגדר ולכן הקריאה ל-item.quantity לא תפל */}
+            {item.quantity && (
+              <Typography component="span" variant="body2" color="text.primary">
+                Quantity: {item.quantity}
+              </Typography>
+            )}
           </>
         }
       />

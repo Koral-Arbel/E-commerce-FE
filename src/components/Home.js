@@ -1,7 +1,12 @@
 import React, { useContext, useEffect, useState } from "react";
 import Grid from "@mui/material/Grid";
 import AuthContext from "./context/AuthProvider";
-import { addFavoriteItem, getAllItems, getProfileUser } from "../services/api";
+import {
+  addFavoriteItem,
+  addItemToCart,
+  getAllItems,
+  getProfileUser,
+} from "../services/api";
 import Item from "./Item";
 import UserProfileContext from "./context/UserProfileContext";
 
@@ -10,7 +15,8 @@ function Home() {
   const { userDetails, setUserDetails } = useContext(UserProfileContext);
 
   const [items, setItems] = useState([]);
-  const [favoriteItems, setFavoriteItems] = useState([]);
+  const [setFavoriteItems] = useState([]);
+  const [setCart] = useState([]);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -54,18 +60,64 @@ function Home() {
     try {
       // אם הצלחנו לשלוף את המידע, נשלוף ממנו את המזהה
       const userId = userDetails.id;
-      console.log("User ID : ", userDetails.id);
+      console.log("UserID : ", userId);
 
       // קריאה לפונקציה שמוסיפה פריט למועדפים
       await addFavoriteItem({ userId: userDetails.id, itemId }, auth.token);
       setFavoriteItems((prevItems) => [...prevItems, { itemId }]);
     } catch (error) {
-      console.error("Error adding item to favorites:", error);
-      setError(
-        error.message || "An error occurred while adding item to favorites"
-      );
+      console.log(" adding item to favorites:", itemId);
+      setError();
     }
   };
+
+  const handlerAddItemToCart = async (itemId) => {
+    console.log("Auth details:", auth);
+    console.log("Item ID :", itemId);
+    console.log("User USERNAME : ", auth.username);
+    console.log("User USERNAME : ", auth.token);
+
+    try {
+      // אם הצלחנו לשלוף את המידע, נשלוף ממנו את המזהה
+      const userId = userDetails.id;
+      console.log("UserID : ", userId);
+
+      // קריאה לפונקציה שמוסיפה פריט למועדפים
+      await addItemToCart({ userId: userDetails.id, itemId }, auth.token);
+      setCart((prevItems) => [...prevItems, { itemId }]);
+    } catch (error) {
+      console.log(" adding item to cart:", itemId);
+      setError();
+    }
+  };
+
+  // const handleAddItemToCart = async (itemId) => {
+  //   try {
+  //     const response = await fetch(addItemToCart, {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         Authorization: `Bearer ${auth.token}`,
+  //       },
+  //       body: JSON.stringify({
+  //         userId: auth.userId,
+  //         itemId: itemId,
+  //         quantity: 1, // או כל כמות אחרת שתרצה
+  //         shippingAddress: userDetails.full_address, // או שם אחר שיתאים לך
+  //       }),
+  //     });
+
+  //     if (!response.ok) {
+  //       throw new Error("Failed to add item to cart");
+  //     }
+
+  //     // Optionally, you can handle the response or show a success message
+  //     const responseData = await response.json();
+  //     console.log("Item added to cart:", responseData);
+  //   } catch (error) {
+  //     console.error("Error adding item to cart:", error);
+  //   }
+  // };
 
   return (
     <>
@@ -80,7 +132,7 @@ function Home() {
           <Item
             key={item.id}
             item={item}
-            handleAddItemToCart={() => {}}
+            handleAddItemToCart={() => handlerAddItemToCart(item.id)}
             handleAddItemToFavorites={handleAddItemToFavorites}
           />
         ))}

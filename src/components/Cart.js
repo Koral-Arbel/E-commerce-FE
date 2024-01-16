@@ -1,121 +1,52 @@
-// Cart.js
-import React, { useContext, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import CartItem from "./CartItem";
+import React, { useContext, useState } from "react";
+import axios from "axios";
+import { createNewOrder } from "../services/api";
 import AuthContext from "./context/AuthProvider";
-import {
-  addItemToCart,
-  authenticate,
-  createNewOrder,
-  deleteOrderItem,
-  getOpenOrder,
-  getProfileUser,
-  getUserById,
-  removeItemFromCart,
-} from "../services/api";
-import CartContext from "../components/context/CartContext";
 import UserProfileContext from "./context/UserProfileContext";
 
 function Cart() {
-  const [loading, setLoading] = useState(true);
-  const [addedItems, setAddedItems] = useState([]);
-  const { cart, setCart } = useContext(CartContext);
   const { auth } = useContext(AuthContext);
   const { userDetails, setUserDetails } = useContext(UserProfileContext);
+  const [orderDate, setOrderDate] = useState(new Date().toISOString());
+  const [shippingAddress, setShippingAddress] = useState("");
+  const [status, setStatus] = useState("TEMP");
+  const [orderNumber, setOrderNumber] = useState(null);
 
-  useEffect(() => {
-    if (auth) {
-      handleCheckTempOrder();
-    }
-  }, [auth]);
-
-  const handleCheckTempOrder = async () => {
+  const handleCreateOrder = async () => {
     try {
-      const userProfile = await getProfileUser(auth.username);
-
-      console.log(auth);
-      const response = await getOpenOrder(userProfile);
-      console.log(userProfile);
-
-      console.log("Response status:", response.status);
-      console.log("Response headers:", response.headers);
-      console.log("Server response data:", await response.text());
-      console.log("my order:", cart);
-
-      if (!response.ok) {
-        console.error("Failed to fetch cart items");
-        throw new Error("Failed to fetch cart items");
-      }
-
-      const data = await response.json();
-      console.log("Data received:", data);
-
-      setCart(data);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching cart items:", error);
-      setLoading(false);
-    }
-  };
-
-  const handleRemoveItem = async (itemToRemove) => {
-    try {
-      const response = await fetch(deleteOrderItem, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${auth.token}`,
+      const userId = userDetails.id;
+      const jwtToken = auth.token;
+      const response = await createNewOrder(
+        {
+          userId,
+          orderDate,
+          shippingAddress,
+          status,
         },
-        body: JSON.stringify({ itemId: itemToRemove.id }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to remove item from cart");
-      }
-
-      setCart((prevItems) =>
-        prevItems.filter((item) => item.id !== itemToRemove.id)
+        jwtToken
       );
+
+      const newOrderNumber = response.data.orderNumber; // המספר של ההזמנה
+      setOrderNumber(newOrderNumber);
+
+      console.log("ההזמנה נוצרה בהצלחה:", response.data);
+
+      // כאן ניתן להוסיף פעולות נוספות לאחר יצירת ההזמנה
     } catch (error) {
-      console.error("Error removing item from cart:", error);
+      console.error("שגיאה ביצירת ההזמנה:", error);
     }
   };
+
+  const isCartEmpty = true; // צריך להגדיר באמת אם העגלה ריקה
 
   return (
-    <section>
-      <h1>Shopping Cart</h1>
-      {auth ? (
-        <>
-          {loading ? (
-            <p>Loading...</p>
-          ) : (
-            <>
-              {cart.length > 0 ? (
-                <>
-                  <ul>
-                    {cart.map((item) => (
-                      <CartItem
-                        key={item.id}
-                        item={item}
-                        onRemoveItem={handleRemoveItem}
-                      />
-                    ))}
-                  </ul>
-                  <button>Proceed to Checkout</button>
-                </>
-              ) : (
-                <p>Your cart is empty.</p>
-              )}
-            </>
-          )}
-        </>
-      ) : (
-        <>
-          <p>You need to be logged in to view your cart.</p>
-          <Link to="/login">Login</Link>
-        </>
-      )}
-    </section>
+    <div>
+      {/* דוגמה לכפתור הזמנה */}
+      <button onClick={handleCreateOrder}>צור הזמנה</button>
+
+      {/* הודעה אם עגלת הקניות ריקה */}
+      {isCartEmpty && <p>Cart Empty</p>}
+    </div>
   );
 }
 

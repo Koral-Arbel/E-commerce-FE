@@ -1,5 +1,3 @@
-// UserProfile.js
-
 import { Button, Paper, Typography } from "@mui/material";
 import { deleteUser, getProfileUser } from "../../services/api";
 import { useContext, useEffect, useState } from "react";
@@ -54,46 +52,24 @@ function UserProfile() {
 
   return (
     <div className={styles["user-profile-container"]}>
-      <Typography variant="h4" className={styles["user-profile-title"]}>
-        User Profile
-      </Typography>
+      <Typography variant="h4">User Profile</Typography>
       {userDetails ? (
         <Paper elevation={1} className={styles["profile-details-paper"]}>
-          <div className={styles["profile-details-row"]}>
-            <Typography variant="body1">
-              <strong>User ID:</strong> {userDetails.id}
-            </Typography>
-          </div>
-          <div className={styles["profile-details-row"]}>
-            <Typography variant="body1">
-              <strong>Username:</strong> {userDetails.username}
-            </Typography>
-          </div>
-          <div className={styles["profile-details-row"]}>
-            <Typography variant="body1">
-              <strong>Email:</strong> {userDetails.email}
-            </Typography>
-          </div>
-          <div className={styles["profile-details-row"]}>
-            <Typography variant="body1">
-              <strong>First Name:</strong> {userDetails.firstName}
-            </Typography>
-          </div>
-          <div className={styles["profile-details-row"]}>
-            <Typography variant="body1">
-              <strong>Last Name:</strong> {userDetails.lastName}
-            </Typography>
-          </div>
-          <div className={styles["profile-details-row"]}>
-            <Typography variant="body1">
-              <strong>Phone:</strong> {userDetails.phone}
-            </Typography>
-          </div>
-          <div className={styles["profile-details-row"]}>
-            <Typography variant="body1">
-              <strong>Full Address:</strong> {userDetails.fullAddress}
-            </Typography>
-          </div>
+          <Typography variant="body1">User ID: {userDetails.id}</Typography>
+          <Typography variant="body1">
+            Username: {userDetails.username}
+          </Typography>
+          <Typography variant="body1">Email: {userDetails.email}</Typography>
+          <Typography variant="body1">
+            First Name: {userDetails.firstName}
+          </Typography>
+          <Typography variant="body1">
+            Last Name: {userDetails.lastName}
+          </Typography>
+          <Typography variant="body1">Phone: {userDetails.phone}</Typography>
+          <Typography variant="body1">
+            Full Address: {userDetails.fullAddress}
+          </Typography>
           <Button
             variant="contained"
             color="secondary"

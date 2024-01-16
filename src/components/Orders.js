@@ -1,25 +1,54 @@
-import React, { useContext } from "react";
-import AuthContext from "../context/AuthProvider";
-import OrderItem from "./OrderItem";
+import React, { useContext, useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import OrdersContext from "./context/OrdersContext";
 
-function Orders() {
-  const { auth } = useContext(AuthContext);
+function Order() {
+  const { orders, setOrders } = useContext(OrdersContext);
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      // Fetch open orders
+      const openOrdersResponse = await getOpenOrders(auth.userId, auth.token);
+      setOrders(openOrdersResponse.data);
+
+      // Fetch closed orders
+      const closedOrdersResponse = await getClosedOrders(
+        auth.userId,
+        auth.token
+      );
+      // Merge the closed orders into the existing orders state
+      setOrders((prevOrders) => [...prevOrders, ...closedOrdersResponse.data]);
+    };
+
+    fetchOrders();
+  }, [auth.userId, auth.token, setOrders]);
 
   return (
-    <section>
-      <h1>Order History</h1>
-      {auth ? (
-        <>
-          <ul>
-            <OrderItem />
-            <OrderItem />
-          </ul>
-        </>
+    <div>
+      <h2>Order Details</h2>
+      {orders.length === 0 ? (
+        <p>No orders found.</p>
       ) : (
-        <p>You need to be logged in to view your orders.</p>
+        <ul>
+          {orders.map((order) => (
+            <li key={order.id}>
+              <h3>Date: {order.date}</h3>
+              <h3>Shipping Address: {order.shippingAddress}</h3>
+              <h3>Status: {order.status}</h3>
+
+              <ul>
+                {order.orderItems.map((item) => (
+                  <li key={item.itemId}>
+                    {item.quantity} x {item.item.title}
+                  </li>
+                ))}
+              </ul>
+            </li>
+          ))}
+        </ul>
       )}
-    </section>
+    </div>
   );
 }
 
-export default Orders;
+export default Order;

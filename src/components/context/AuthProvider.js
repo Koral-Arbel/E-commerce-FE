@@ -1,5 +1,4 @@
 import React, { createContext, useState } from "react";
-import UserProfile from "../userRegistered/UserProfile";
 
 const AuthContext = createContext({});
 
