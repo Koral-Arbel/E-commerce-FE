@@ -1,4 +1,4 @@
-import { Button, Paper, Typography } from "@mui/material";
+import { Breadcrumbs, Button, Paper, Typography } from "@mui/material";
 import { deleteUser, getProfileUser } from "../../services/api";
 import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -55,7 +55,7 @@ function UserProfile() {
       <Typography variant="h4">User Profile</Typography>
       {userDetails ? (
         <Paper elevation={1} className={styles["profile-details-paper"]}>
-          <Typography variant="body1">User ID: {userDetails.id}</Typography>
+          <Breadcrumbs variant="body1">User ID: {userDetails.id}</Breadcrumbs>
           <Typography variant="body1">
             Username: {userDetails.username}
           </Typography>

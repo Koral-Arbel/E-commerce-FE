@@ -118,6 +118,7 @@ function Home() {
         auth.token
       );
       setCart((prevItems) => [...prevItems, { itemId, shippingAddress }]);
+      console.log("Item added to cart successfully!"); // הדפסה לאחר הצלחת הוספת הפריט לסל
     } catch (error) {
       console.error("Error adding item to cart:", error);
       setError();
@@ -139,7 +140,9 @@ function Home() {
                 key={item.id}
                 item={item}
                 handleAddItemToCart={() => handlerAddItemToCart(item.id)}
-                handleAddItemToFavorites={handleAddItemToFavorites}
+                handleAddItemToFavorites={() =>
+                  handleAddItemToFavorites(item.id)
+                } // Added parentheses to this function call
               />
             ))}
           </Grid>

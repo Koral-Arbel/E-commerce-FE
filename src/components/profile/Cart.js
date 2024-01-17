@@ -16,53 +16,65 @@ function Cart() {
     orderDate: null,
     shippingAddress: "",
     status: "TEMP",
+    orderNumber: null,
   });
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  const handlerLoadCart = async () => {
-    try {
-      const response = await getOrderTemp(userDetails.id, auth.token);
-      setCart(response.data.items);
-      setOrderDetails({
-        userId: userDetails.id,
-        orderDate: response.data.orderDate,
-        shippingAddress: response.data.shippingAddress,
-        status: response.data.status,
-      });
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching cart details:", error);
-      setError("Error fetching cart details. Please try again later.");
-    }
-  };
+  const [orderClosed, setOrderClosed] = useState(false);
 
   useEffect(() => {
+    const handlerLoadCart = async () => {
+      try {
+        if (!auth || !auth.token || !userDetails.id) {
+          setLoading(false);
+          return;
+        }
+
+        const response = await getOrderTemp(userDetails.id, auth.token);
+
+        if (response.data) {
+          setCart(response.data.items);
+          setOrderDetails({
+            userId: userDetails.id,
+            orderDate: response.data.order?.orderDate,
+            shippingAddress: response.data.order?.shippingAddress,
+            status: response.data.order?.status,
+            orderNumber: response.data.order?.id,
+          });
+        }
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching cart details:", error);
+        setError("Error fetching cart details. Please try again later.");
+        setLoading(false);
+      }
+    };
     handlerLoadCart();
-  }, [cart]);
+  }, [auth.token, userDetails.id, setCart]);
 
   const handlerCheckout = async () => {
     try {
-      await checkOutOrder(orderDetails.orderNumber, auth.token);
-      setOrderDetails((prevOrder) => ({
-        ...prevOrder,
-        status: "CLOSE",
-        orderDate: new Date().toISOString(),
-      }));
-      setCart([]);
-      setOrders((prevOrders) => [...prevOrders, cart]);
+      if (orderDetails.orderNumber && cart.length > 0) {
+        await checkOutOrder(orderDetails.orderNumber, auth.token);
+        setOrderDetails((prevOrder) => ({
+          ...prevOrder,
+          status: "CLOSE",
+          orderDate: new Date().toISOString(),
+        }));
+        setCart([]);
+      }
     } catch (error) {
       console.error("Error during checkout:", error);
     }
   };
 
-  const calculateTotalPrice = () => {
+  function calculateTotalPrice(cart) {
     return cart.reduce((total, item) => {
       const itemPrice = item.price || 0;
       return total + itemPrice;
     }, 0);
-  };
+  }
 
   return (
     <div>
@@ -80,14 +92,20 @@ function Cart() {
           {orderDetails.status === "CLOSE" ? (
             <div>
               <h2>Items Purchased</h2>
-              <ul>
+              <div>
                 {cart.map((item) => (
-                  <li key={item.id}>
-                    {item.title} - {item.price} - {item.quantity}
-                  </li>
+                  <div key={item.id}>
+                    <img src={item.photo} alt={item.title} />
+                    <div>
+                      <h3>{item.title}</h3>
+                      <p>Price: ${item.price}</p>
+                      <p>Available Stock: {item.availableStock}</p>
+                      <p>Quantity: {item.quantity}</p>
+                    </div>
+                  </div>
                 ))}
-              </ul>
-              <p>Total Price: {calculateTotalPrice()}</p>
+              </div>
+              <p>Total Price: ${calculateTotalPrice(cart)}</p>
             </div>
           ) : (
             <div>
@@ -95,7 +113,13 @@ function Cart() {
               <ul>
                 {cart.map((item) => (
                   <li key={item.id}>
-                    {item.title} - {item.price} - {item.quantity}
+                    <img src={item.photo} alt={item.title} />
+                    <div>
+                      <h3>{item.title}</h3>
+                      <p>Price: ${item.price}</p>
+                      <p>Available Stock: {item.availableStock}</p>
+                      <p>Quantity: {item.quantity}</p>
+                    </div>
                   </li>
                 ))}
               </ul>
