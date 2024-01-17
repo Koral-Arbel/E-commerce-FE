@@ -1,9 +1,9 @@
 import React, { useContext, useEffect, useState } from "react";
-import { checkOutOrder, getOrderTemp } from "../services/api";
-import AuthContext from "./context/AuthProvider";
-import UserProfileContext from "./context/UserProfileContext";
-import CartContext from "./context/CartContext";
-import OrdersContext from "./context/OrdersContext";
+import { checkOutOrder, getOrderTemp } from "../../services/api";
+import AuthContext from "../context/AuthProvider";
+import UserProfileContext from "../context/UserProfileContext";
+import CartContext from "../context/CartContext";
+import OrdersContext from "../context/OrdersContext";
 
 function Cart() {
   const { auth } = useContext(AuthContext);
@@ -12,7 +12,7 @@ function Cart() {
   const { orders, setOrders } = useContext(OrdersContext);
 
   const [orderDetails, setOrderDetails] = useState({
-    orderNumber: null,
+    userId: userDetails.id,
     orderDate: null,
     shippingAddress: "",
     status: "TEMP",

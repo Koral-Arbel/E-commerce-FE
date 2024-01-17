@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import Grid from "@mui/material/Grid";
-import AuthContext from "./context/AuthProvider";
+import AuthContext from "../context/AuthProvider";
 import {
   addFavoriteItem,
   addItemToCart,
@@ -8,9 +8,9 @@ import {
   getAllItems,
   getProfileUser,
   getOpenOrder,
-} from "../services/api";
+} from "../../services/api";
 import Item from "./Item";
-import UserProfileContext from "./context/UserProfileContext";
+import UserProfileContext from "../context/UserProfileContext";
 
 function Home() {
   const { auth } = useContext(AuthContext);
@@ -23,7 +23,7 @@ function Home() {
 
   const [items, setItems] = useState([]);
   const [setFavoriteItems] = useState([]);
-  const [setCart] = useState([]);
+  const [cart, setCart] = useState([]);
 
   const [showItems, setShowItems] = useState(false); // האם להציג את הפריטים או לא
   const [loading, setLoading] = useState(true);
@@ -108,10 +108,18 @@ function Home() {
 
   const handlerAddItemToCart = async (itemId) => {
     try {
-      await addItemToCart({ userId: userDetails.id, itemId }, auth.token);
-      setCart((prevItems) => [...prevItems, { itemId }]);
+      await addItemToCart(
+        {
+          userId: userDetails.id,
+          itemId: itemId,
+          quantity: 1,
+          shippingAddress: userDetails.shippingAddress,
+        },
+        auth.token
+      );
+      setCart((prevItems) => [...prevItems, { itemId, shippingAddress }]);
     } catch (error) {
-      console.error("Error adding item to cart:", itemId);
+      console.error("Error adding item to cart:", error);
       setError();
     }
   };

@@ -1,13 +1,10 @@
 import React, { useContext } from "react";
-import AuthContext from "./context/AuthProvider";
 
 function Header(props) {
-  const { auth } = useContext(AuthContext);
-
   return (
     <header>
-      <div>
-        <h1>Hello, {auth?.username}!</h1>
+      <div style={{ textAlign: "center", margin: "20px 0" }}>
+        <h1>A shopping experience from another world</h1>
       </div>
     </header>
   );

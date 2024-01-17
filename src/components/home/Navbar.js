@@ -12,8 +12,8 @@ import {
   faShoppingCart,
 } from "@fortawesome/free-solid-svg-icons";
 import classes from "./Navbar.module.css";
-import SearchBar from "./SearchBar";
-import AuthContext from "./context/AuthProvider";
+import SearchBar from "../SearchBar";
+import AuthContext from "../context/AuthProvider";
 
 function Navbar() {
   const { auth } = useContext(AuthContext);

@@ -66,13 +66,16 @@ function FavoriteList() {
       );
     }
   };
+
   return (
-    <div>
+    <div style={{ textAlign: "center", margin: "20px 0" }}>
       <h2>Favorite Items</h2>
       {loading ? (
         <p>Loading...</p>
       ) : error ? (
         <p>{error}</p>
+      ) : favoriteItems.length === 0 ? (
+        <p>There are no favorite items</p>
       ) : (
         <div className="favorite-items-container">
           {favoriteItems.map((item) => (

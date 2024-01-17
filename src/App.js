@@ -1,17 +1,17 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Route, Routes } from "react-router-dom";
-import Navbar from "./components/Navbar";
+import Navbar from "./components/home/Navbar";
 import Login from "./components/registration/Login";
 import Register from "./components/registration/Register";
-import Cart from "./components/Cart";
-import FavoriteList from "./components/userRegistered/FavoriteList";
+import Cart from "./components/profile/Cart";
+import FavoriteList from "./components/profile/FavoriteList";
 import AuthContext, { AuthProvider } from "./components/context/AuthProvider";
 import Footer from "./components/footer/Footer";
 import CartContext from "./components/context/CartContext";
 import FavouritesContext from "./components/context/FavoriteContext";
 import UserProfileContext from "./components/context/UserProfileContext";
 import ItemsContext from "./components/context/ItemsContext";
-import UserProfile from "./components/userRegistered/UserProfile";
+import UserProfile from "./components/profile/UserProfile";
 import {
   addFavoriteItem,
   addItemToCart,
@@ -20,8 +20,9 @@ import {
   removeFavoriteItem,
 } from "./services/api";
 import axios from "axios";
-import Home from "./components/Home";
+import Home from "./components/home/Home";
 import Logout from "./components/registration/Logout";
+import Header from "./components/header/Header";
 
 function App() {
   const [errMsg] = useState("");
@@ -32,6 +33,7 @@ function App() {
 
       <AuthProvider>
         <Navbar />
+        <Header />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
