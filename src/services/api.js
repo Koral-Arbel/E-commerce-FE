@@ -10,7 +10,7 @@ const GET_OPEN_ORDER = (userId) => `/order/openOrder/${userId}`;
 const CHECKOUT_ORDER = (orderId) => `/order/processPayment/${orderId}`;
 
 const ALL_ITEMS = () => `/item/all`;
-const ADD_ITEM_TO_CART = () => `/orderItem/create`;
+const ADD_ITEM_TO_CART = () => `/orderItem/create/`;
 const DELETE_ORDER_ITEM = (itemId) => `/orderItem/delete/${itemId}`;
 
 const FAVORITE_ITEMS = (userId) => `/favoriteItem/all/${userId}`;

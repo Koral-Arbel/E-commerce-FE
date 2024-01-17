@@ -4,8 +4,10 @@ import AuthContext from "./context/AuthProvider";
 import {
   addFavoriteItem,
   addItemToCart,
+  createNewOrder,
   getAllItems,
   getProfileUser,
+  getOpenOrder,
 } from "../services/api";
 import Item from "./Item";
 import UserProfileContext from "./context/UserProfileContext";
@@ -14,19 +16,41 @@ function Home() {
   const { auth } = useContext(AuthContext);
   const { userDetails, setUserDetails } = useContext(UserProfileContext);
 
+  const [orderDate, setOrderDate] = useState(new Date().toISOString());
+  const [shippingAddress, setShippingAddress] = useState("");
+  const [status, setStatus] = useState("TEMP");
+  const [orderNumber, setOrderNumber] = useState(null);
+
   const [items, setItems] = useState([]);
   const [setFavoriteItems] = useState([]);
   const [setCart] = useState([]);
 
+  const [showItems, setShowItems] = useState(false); // האם להציג את הפריטים או לא
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetchItems();
-    fetchUserProfile();
+    handlerShowItems();
+    handlerUserProfile();
+    checkOpenOrder(); // בדוק אם יש הזמנה פתוחה בטעינת הדף
   }, []);
 
-  const fetchItems = async () => {
+  const checkOpenOrder = async () => {
+    try {
+      const response = await getOpenOrder(userDetails.id, auth.token);
+
+      if (response.data) {
+        setOrderNumber(response.data.orderNumber);
+        setShowItems(true);
+      } else {
+        setShowItems(false);
+      }
+    } catch (error) {
+      console.error("Error checking open order:", error);
+    }
+  };
+
+  const handlerShowItems = async () => {
     try {
       const response = await getAllItems();
       setItems(response.data);
@@ -37,32 +61,17 @@ function Home() {
     }
   };
 
-  const fetchUserProfile = async () => {
+  const handlerUserProfile = async () => {
     try {
-      // שלוף מידע על המשתמש מהשרת
       const userProfile = await getProfileUser(auth.username);
-      console.log("User Profile:", userProfile);
-
-      // שמור את פרטי המשתמש בקונטקסט
       setUserDetails(userProfile);
-      return userProfile;
     } catch (error) {
       console.error("Error fetching user profile:", error);
     }
   };
 
   const handleAddItemToFavorites = async (itemId) => {
-    console.log("Auth details:", auth);
-    console.log("Item ID :", itemId);
-    console.log("User USERNAME : ", auth.username);
-    console.log("User USERNAME : ", auth.token);
-
     try {
-      // אם הצלחנו לשלוף את המידע, נשלוף ממנו את המזהה
-      const userId = userDetails.id;
-      console.log("UserID : ", userId);
-
-      // קריאה לפונקציה שמוסיפה פריט למועדפים
       await addFavoriteItem({ userId: userDetails.id, itemId }, auth.token);
       setFavoriteItems((prevItems) => [...prevItems, { itemId }]);
     } catch (error) {
@@ -71,72 +80,69 @@ function Home() {
     }
   };
 
-  const handlerAddItemToCart = async (itemId) => {
-    console.log("Auth details:", auth);
-    console.log("Item ID :", itemId);
-    console.log("User USERNAME : ", auth.username);
-    console.log("User USERNAME : ", auth.token);
-
+  const handleCreateOrder = async () => {
     try {
-      // אם הצלחנו לשלוף את המידע, נשלוף ממנו את המזהה
       const userId = userDetails.id;
-      console.log("UserID : ", userId);
+      const jwtToken = auth.token;
+      const response = await createNewOrder(
+        {
+          userId,
+          orderDate,
+          shippingAddress,
+          status,
+        },
+        jwtToken
+      );
 
-      // קריאה לפונקציה שמוסיפה פריט למועדפים
-      await addItemToCart({ userId: userDetails.id, itemId }, auth.token);
-      setCart((prevItems) => [...prevItems, { itemId }]);
+      const newOrderNumber = response.data.orderNumber;
+      setOrderNumber(newOrderNumber);
+
+      // כאן ניתן להוסיף פעולות נוספות לאחר יצירת ההזמנה
+
+      // לאחר יצירת ההזמנה, בדוק מחדש אם יש הזמנה פתוחה
+      checkOpenOrder();
     } catch (error) {
-      console.log(" adding item to cart:", itemId);
-      setError();
+      console.error("Error in create new order", error);
     }
   };
 
-  // const handleAddItemToCart = async (itemId) => {
-  //   try {
-  //     const response = await fetch(addItemToCart, {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         Authorization: `Bearer ${auth.token}`,
-  //       },
-  //       body: JSON.stringify({
-  //         userId: auth.userId,
-  //         itemId: itemId,
-  //         quantity: 1, // או כל כמות אחרת שתרצה
-  //         shippingAddress: userDetails.full_address, // או שם אחר שיתאים לך
-  //       }),
-  //     });
-
-  //     if (!response.ok) {
-  //       throw new Error("Failed to add item to cart");
-  //     }
-
-  //     // Optionally, you can handle the response or show a success message
-  //     const responseData = await response.json();
-  //     console.log("Item added to cart:", responseData);
-  //   } catch (error) {
-  //     console.error("Error adding item to cart:", error);
-  //   }
-  // };
+  const handlerAddItemToCart = async (itemId) => {
+    try {
+      await addItemToCart({ userId: userDetails.id, itemId }, auth.token);
+      setCart((prevItems) => [...prevItems, { itemId }]);
+    } catch (error) {
+      console.error("Error adding item to cart:", itemId);
+      setError();
+    }
+  };
 
   return (
     <>
       <div style={{ textAlign: "center", margin: "20px 0" }}>
         <h1>Buy Now - Apple products</h1>
       </div>
-      {loading && <p>Loading...</p>}
-      {error && <p style={{ color: "red" }}>{error}</p>}
-
-      <Grid container spacing={2}>
-        {items.map((item) => (
-          <Item
-            key={item.id}
-            item={item}
-            handleAddItemToCart={() => handlerAddItemToCart(item.id)}
-            handleAddItemToFavorites={handleAddItemToFavorites}
-          />
-        ))}
-      </Grid>
+      {showItems ? (
+        <>
+          {loading && <p>Loading...</p>}
+          {error && <p style={{ color: "red" }}>{error}</p>}
+          <Grid container spacing={2}>
+            {items.map((item) => (
+              <Item
+                key={item.id}
+                item={item}
+                handleAddItemToCart={() => handlerAddItemToCart(item.id)}
+                handleAddItemToFavorites={handleAddItemToFavorites}
+              />
+            ))}
+          </Grid>
+        </>
+      ) : (
+        <div style={{ textAlign: "center", margin: "20px 0" }}>
+          <button onClick={handleCreateOrder}>
+            Click here to start shopping
+          </button>
+        </div>
+      )}
     </>
   );
 }
