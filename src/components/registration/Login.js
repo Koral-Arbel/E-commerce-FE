@@ -35,9 +35,18 @@ function Login() {
 
       // אם יש צורך לעדכן את הסטייט רק אחרי ההצלחה של authenticate
       setAuth({ username: user, token: response.data.jwt, isLoggedIn: true });
+
       setSuccess(true);
       setUser("");
       setPwd("");
+      localStorage.setItem(
+        "auth",
+        JSON.stringify({
+          username: user,
+          token: response.data.jwt,
+          isLoggedIn: true,
+        })
+      );
     } catch (err) {
       if (!err.response) {
         setErrMsg("No Server Response");
