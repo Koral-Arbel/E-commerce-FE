@@ -6,6 +6,8 @@ import {
   removeFavoriteItem,
 } from "../../services/api";
 import UserProfileContext from "../context/UserProfileContext";
+import ItemsContext from "../context/ItemsContext";
+
 import "./FavoriteList.module.css";
 import { Button } from "@mui/material";
 
@@ -17,6 +19,7 @@ function FavoriteList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { userDetails } = useContext(UserProfileContext);
+  const { items } = useContext(ItemsContext);
 
   useEffect(() => {
     const fetchFavoriteItems = async () => {
@@ -27,7 +30,7 @@ function FavoriteList() {
         }
 
         const userId = userDetails.id;
-        console.log("auth object:", auth.token);
+        console.log("auth object:", auth);
         console.log("userId:", userId);
         const response = await getFavoriteItems(userId, auth.token);
         const fetchedItems = response.data;
@@ -47,7 +50,10 @@ function FavoriteList() {
 
   const handlerAddCart = async (itemId) => {
     try {
-      await addItemToCart({ userId: userDetails.id, itemId }, auth.token); // <-- שינוי כאן
+      await addItemToCart(
+        { userId: userDetails.id, itemId: itemId.id },
+        auth.token
+      ); // <-- שינוי כאן
       setCart((prevItems) => [...prevItems, { itemId }]);
     } catch (error) {
       console.error("Error adding item to cart:", error);
@@ -57,12 +63,14 @@ function FavoriteList() {
 
   const handlerRemoveItemFavorite = async (itemId) => {
     try {
-      await removeFavoriteItem({ userId: userDetails.id, itemId }, auth.token);
-      setFavoriteItems((prevItems) => [...prevItems, { itemId }]);
+      await removeFavoriteItem(itemId, auth.token);
+      setFavoriteItems((prevItems) =>
+        prevItems.filter((item) => item.id !== itemId)
+      );
     } catch (error) {
-      console.error("Error adding item to favorites:", error);
+      console.error("Error deleting item from favorites:", error);
       setError(
-        error.message || "An error occurred while adding item to favorites"
+        error.message || "An error occurred while deleting item from favorites"
       );
     }
   };

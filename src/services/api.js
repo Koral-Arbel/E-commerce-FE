@@ -5,7 +5,7 @@ const CREATE_NEW_USER = () => `/api/public/user/create`;
 const GET_USER_PROFILE = (username) => `/api/public/user/findUser/${username}`;
 const GET_USER_BY_ID = (userId) => `/api/public/user/getUser/${userId}`;
 const CREATE_NEW_ORDER = () => `/order/create/`;
-const ORDER_TEMP = (userId) => `order/orderTemp/${userId}`;
+const GET_ALL_ORDERS = (status) => `orderItem/byStatus/${status}`;
 const GET_OPEN_ORDER = (userId) => `/order/openOrder/${userId}`;
 const CHECKOUT_ORDER = (orderId) => `/order/processPayment/${orderId}`;
 
@@ -15,7 +15,7 @@ const DELETE_ORDER_ITEM = (itemId) => `/orderItem/delete/${itemId}`;
 
 const FAVORITE_ITEMS = (userId) => `/favoriteItem/all/${userId}`;
 const ADD_FAVORITE_ITEMS = () => `/favoriteItem/itemAddFavorite/`;
-const REMOVE_FAVORITE_ITEM = (itemId) => `/favoriteItem/delete/${itemId}`;
+const REMOVE_FAVORITE_ITEM = (itemId) => `/favoriteItem/${itemId}/delete`;
 
 const DELETE_USER = (userId) => `/api/public/user/deleteUser/${userId}`;
 
@@ -54,8 +54,8 @@ export const createNewOrder = (bodyParam, jwt) => {
   });
 };
 
-export const getOrderTemp = (userId, jwt) => {
-  return axios.get(ORDER_TEMP(userId), {
+export const getAllOrders = (status, jwt) => {
+  return axios.get(GET_ALL_ORDERS(status), {
     params: {
       Authorization: `Bearer ${jwt}`,
     },

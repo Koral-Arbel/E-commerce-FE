@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { checkOutOrder, getOrderTemp } from "../../services/api";
+import { checkOutOrder, getAllOrders } from "../../services/api";
 import AuthContext from "../context/AuthProvider";
 import UserProfileContext from "../context/UserProfileContext";
 import CartContext from "../context/CartContext";
@@ -31,7 +31,7 @@ function Cart() {
           return;
         }
 
-        const response = await getOrderTemp(userDetails.id, auth.token);
+        const response = await getAllOrders(userDetails.id, auth.token);
 
         if (response.data) {
           setCart(response.data.items);
