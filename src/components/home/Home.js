@@ -25,14 +25,14 @@ function Home() {
   const [setFavoriteItems] = useState([]);
   const [cart, setCart] = useState([]);
 
-  const [showItems, setShowItems] = useState(false); // האם להציג את הפריטים או לא
+  const [showItems, setShowItems] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     handlerShowItems();
     handlerUserProfile();
-    checkOpenOrder(); // בדוק אם יש הזמנה פתוחה בטעינת הדף
+    checkOpenOrder();
   }, []);
 
   const checkOpenOrder = async () => {
@@ -75,7 +75,7 @@ function Home() {
       await addFavoriteItem({ userId: userDetails.id, itemId }, auth.token);
       setFavoriteItems((prevItems) => [...prevItems, { itemId }]);
     } catch (error) {
-      console.log(" adding item to favorites:", itemId);
+      console.log("Adding item to favorites:", itemId);
       setError();
     }
   };
@@ -97,9 +97,9 @@ function Home() {
       const newOrderNumber = response.data.orderNumber;
       setOrderNumber(newOrderNumber);
 
-      // כאן ניתן להוסיף פעולות נוספות לאחר יצירת ההזמנה
+      // Perform additional actions after creating the order
 
-      // לאחר יצירת ההזמנה, בדוק מחדש אם יש הזמנה פתוחה
+      // After creating the order, check again if there is an open order
       checkOpenOrder();
     } catch (error) {
       console.error("Error in create new order", error);
@@ -108,6 +108,12 @@ function Home() {
 
   const handlerAddItemToCart = async (itemId) => {
     try {
+      // If there is no open order, create a new order
+      if (!showItems) {
+        await handleCreateOrder();
+      }
+
+      // Add item to cart
       await addItemToCart(
         {
           userId: userDetails.id,
@@ -117,8 +123,10 @@ function Home() {
         },
         auth.token
       );
+
+      // Update the cart state
       setCart((prevItems) => [...prevItems, { itemId, shippingAddress }]);
-      console.log("Item added to cart successfully!"); // הדפסה לאחר הצלחת הוספת הפריט לסל
+      console.log("Item added to cart successfully!");
     } catch (error) {
       console.error("Error adding item to cart:", error);
       setError();
@@ -130,30 +138,18 @@ function Home() {
       <div style={{ textAlign: "center", margin: "20px 0" }}>
         <h1>Buy Now - Apple products</h1>
       </div>
-      {showItems ? (
-        <>
-          {loading && <p>Loading...</p>}
-          {error && <p style={{ color: "red" }}>{error}</p>}
-          <Grid container spacing={2}>
-            {items.map((item) => (
-              <Item
-                key={item.id}
-                item={item}
-                handleAddItemToCart={() => handlerAddItemToCart(item.id)}
-                handleAddItemToFavorites={() =>
-                  handleAddItemToFavorites(item.id)
-                } // Added parentheses to this function call
-              />
-            ))}
-          </Grid>
-        </>
-      ) : (
-        <div style={{ textAlign: "center", margin: "20px 0" }}>
-          <button onClick={handleCreateOrder}>
-            Click here to start shopping
-          </button>
-        </div>
-      )}
+      {loading && <p>Loading...</p>}
+      {error && <p style={{ color: "red" }}>{error}</p>}
+      <Grid container spacing={2}>
+        {items.map((item) => (
+          <Item
+            key={item.id}
+            item={item}
+            handleAddItemToCart={() => handlerAddItemToCart(item.id)}
+            handleAddItemToFavorites={() => handleAddItemToFavorites(item.id)}
+          />
+        ))}
+      </Grid>
     </>
   );
 }
