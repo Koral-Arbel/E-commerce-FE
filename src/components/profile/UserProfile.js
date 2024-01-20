@@ -29,15 +29,15 @@ function UserProfile() {
     fetchUserProfile();
   }, [auth.username, setAuth, setUserDetails]);
 
-  const handleDeleteCustomerBtn = async () => {
+  const handleDeleteUserBtn = async () => {
     try {
-      await deleteUser(userDetails.id, "Authorization = Bearer " + auth.token);
+      await deleteUser(userDetails.id, auth.token);
       setAuth((prevAuth) => ({
         ...prevAuth,
         isLoggedIn: false,
-        userId: null,
-        token: null,
-        username: null,
+        userId: userDetails.id,
+        token: auth.token,
+        username: userDetails.username,
       }));
       setUserDetails(null);
       setUserDeleted(true);
@@ -74,7 +74,7 @@ function UserProfile() {
             variant="contained"
             color="secondary"
             className={styles["profile-delete-btn"]}
-            onClick={handleDeleteCustomerBtn}
+            onClick={handleDeleteUserBtn}
           >
             Delete Account
           </Button>
