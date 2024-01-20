@@ -5,7 +5,7 @@ const CREATE_NEW_USER = () => `/api/public/user/create`;
 const GET_USER_PROFILE = (username) => `/api/public/user/findUser/${username}`;
 const GET_USER_BY_ID = (userId) => `/api/public/user/getUser/${userId}`;
 const CREATE_NEW_ORDER = () => `/order/create/`;
-const GET_ALL_ORDERS = (status) => `orderItem/byStatus/${status}`;
+const GET_ALL_ORDERS = (userId) => `order/allOrders/${userId}`;
 const GET_OPEN_ORDER = (userId) => `/order/openOrder/${userId}`;
 const CHECKOUT_ORDER = (orderId) => `/order/processPayment/${orderId}`;
 
@@ -54,8 +54,8 @@ export const createNewOrder = (bodyParam, jwt) => {
   });
 };
 
-export const getAllOrders = (status, jwt) => {
-  return axios.get(GET_ALL_ORDERS(status), {
+export const getAllOrders = (userId, jwt) => {
+  return axios.get(GET_ALL_ORDERS(userId), {
     params: {
       Authorization: `Bearer ${jwt}`,
     },

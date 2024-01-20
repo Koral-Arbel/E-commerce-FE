@@ -4,6 +4,7 @@ import AuthContext from "../context/AuthProvider";
 import UserProfileContext from "../context/UserProfileContext";
 import CartContext from "../context/CartContext";
 import OrdersContext from "../context/OrdersContext";
+import CartItem from "./CartItem";
 
 function Cart() {
   const { auth } = useContext(AuthContext);
@@ -17,11 +18,11 @@ function Cart() {
     shippingAddress: "",
     status: "TEMP",
     orderNumber: null,
+    items: [], // Initialize items as an empty array
   });
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [orderClosed, setOrderClosed] = useState(false);
 
   useEffect(() => {
     const handlerLoadCart = async () => {
@@ -34,15 +35,32 @@ function Cart() {
         const response = await getAllOrders(userDetails.id, auth.token);
 
         if (response.data) {
-          setCart(response.data.items);
+          const cartItems = Array.isArray(response.data[0].item)
+            ? response.data[0].item
+            : [response.data[0].item];
+
+          setCart(cartItems);
+
+          const orderDetailsData = response.data[0].order || {};
+          const items = cartItems.map((cartItem) => ({
+            id: cartItem.id,
+            title: cartItem.title,
+            photo: cartItem.photo,
+            price: cartItem.price,
+            availableStock: cartItem.availableStock,
+            quantity: cartItem.quantity,
+          }));
+
           setOrderDetails({
             userId: userDetails.id,
-            orderDate: response.data.order?.orderDate,
-            shippingAddress: response.data.order?.shippingAddress,
-            status: response.data.order?.status,
-            orderNumber: response.data.order?.id,
+            orderDate: orderDetailsData.orderDate,
+            shippingAddress: orderDetailsData.shippingAddress,
+            status: orderDetailsData.status,
+            orderNumber: orderDetailsData.id,
+            items: items,
           });
         }
+
         setLoading(false);
       } catch (error) {
         console.error("Error fetching cart details:", error);
@@ -50,17 +68,19 @@ function Cart() {
         setLoading(false);
       }
     };
+
     handlerLoadCart();
   }, [auth.token, userDetails.id, setCart]);
 
   const handlerCheckout = async () => {
     try {
-      if (orderDetails.orderNumber && cart.length > 0) {
-        await checkOutOrder(orderDetails.orderNumber, auth.token);
+      if (orderDetails.orderNumber && cart.length > 0 && auth.token) {
+        await checkOutOrder(orderDetails.orderNumber, {}, auth.token);
         setOrderDetails((prevOrder) => ({
           ...prevOrder,
           status: "CLOSE",
           orderDate: new Date().toISOString(),
+          orderId: orderDetails.id,
         }));
         setCart([]);
       }
@@ -69,8 +89,8 @@ function Cart() {
     }
   };
 
-  function calculateTotalPrice(cart) {
-    return cart.reduce((total, item) => {
+  function calculateTotalPrice() {
+    return orderDetails.items.reduce((total, item) => {
       const itemPrice = item.price || 0;
       return total + itemPrice;
     }, 0);
@@ -92,37 +112,29 @@ function Cart() {
           {orderDetails.status === "CLOSE" ? (
             <div>
               <h2>Items Purchased</h2>
-              <div>
-                {cart.map((item) => (
-                  <div key={item.id}>
-                    <img src={item.photo} alt={item.title} />
-                    <div>
-                      <h3>{item.title}</h3>
-                      <p>Price: ${item.price}</p>
-                      <p>Available Stock: {item.availableStock}</p>
-                      <p>Quantity: {item.quantity}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <p>Total Price: ${calculateTotalPrice(cart)}</p>
+              {orderDetails.items.length > 0 ? (
+                <div>
+                  {orderDetails.items.map((orderItem) => (
+                    <CartItem key={orderItem.id} item={orderItem} />
+                  ))}
+                </div>
+              ) : (
+                <p>No items purchased.</p>
+              )}
+              <p>Total Price: ${calculateTotalPrice()}</p>
             </div>
           ) : (
             <div>
               <h2>Items in Cart</h2>
-              <ul>
-                {cart.map((item) => (
-                  <li key={item.id}>
-                    <img src={item.photo} alt={item.title} />
-                    <div>
-                      <h3>{item.title}</h3>
-                      <p>Price: ${item.price}</p>
-                      <p>Available Stock: {item.availableStock}</p>
-                      <p>Quantity: {item.quantity}</p>
-                    </div>
-                  </li>
-                ))}
-              </ul>
+              {cart.length > 0 ? (
+                <ul>
+                  {cart.map((item) => (
+                    <CartItem key={item.id} item={item} />
+                  ))}
+                </ul>
+              ) : (
+                <p>Your cart is empty.</p>
+              )}
               <button onClick={handlerCheckout}>Checkout</button>
             </div>
           )}

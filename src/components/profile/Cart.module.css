@@ -1,43 +1,51 @@
-/* Cart.module.css */
-.cart-item-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border: 1px solid #ddd;
+/* styles.css */
+
+/* Style for the entire cart container */
+#cartContainer {
+  margin: 20px;
   padding: 20px;
-  margin: 20px 0;
+  border: 1px solid #ccc;
+  border-radius: 8px;
 }
 
-.item-details {
-  display: flex;
-  align-items: center;
-}
-
-.item-image {
-  width: 150px;
-  height: 150px;
-  margin-right: 20px;
-}
-
-.remove-button {
-  background-color: #ff6347;
-  color: #fff;
-  border: none;
-  padding: 12px;
-  cursor: pointer;
-}
-
-.proceed-button {
-  background-color: #32cd32;
-  color: #fff;
-  border: none;
-  padding: 15px;
-  cursor: pointer;
+/* Style for order details */
+.orderDetails {
   margin-top: 20px;
 }
 
-/* Add separation between items */
-.cart-item-container:not(:last-child) {
-  border-bottom: 1px solid #ddd;
-  margin-bottom: 20px;
+/* Style for each item in the order */
+.orderItem {
+  margin-top: 10px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.orderItem img {
+  max-width: 100px;
+  max-height: 100px;
+  margin-right: 10px;
+}
+
+/* Style for the total price */
+.totalPrice {
+  margin-top: 20px;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+/* Style for the checkout button */
+.checkoutButton {
+  margin-top: 20px;
+  padding: 10px;
+  font-size: 16px;
+  background-color: #4caf50;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.checkoutButton:hover {
+  background-color: #45a049;
 }
