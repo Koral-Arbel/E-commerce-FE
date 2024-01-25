@@ -10,6 +10,7 @@ const CREATE_NEW_ORDER = () => `/order/create/`;
 const GET_ALL_ORDERS = (userId) => `order/allOrders/${userId}`;
 const GET_OPEN_ORDER = (userId) => `/order/openOrder/${userId}`;
 const CHECKOUT_ORDER = (orderId) => `/order/processPayment/${orderId}`;
+
 const ALL_ITEMS = () => `/item/all`;
 const ADD_ITEM_TO_CART = () => `/orderItem/create/`;
 const DELETE_ORDER_ITEM = (itemId) => `/orderItem/delete/${itemId}`;

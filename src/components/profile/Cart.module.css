@@ -49,3 +49,63 @@
 .checkoutButton:hover {
   background-color: #45a049;
 }
+/* Style for the open order container */
+#cartContainer {
+  margin: 20px;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+/* Style for the open order button */
+.checkoutButton {
+  margin-top: 20px;
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+/* Style for closed orders container */
+.closedOrdersContainer {
+  margin-top: 20px;
+}
+
+/* Style for the closed orders table */
+.closedOrdersTable {
+  margin-top: 10px;
+}
+
+/* Style for closed orders table */
+.closedOrdersTable {
+  margin-top: 10px;
+}
+
+/* Style for each cell in the closed orders table */
+.closedOrdersTable td {
+  padding: 8px;
+}
+
+/* Style for the vertical table headers */
+.closedOrdersTable th {
+  writing-mode: vertical-rl; /* Vertical writing mode */
+  transform: rotate(180deg); /* Rotate the text */
+  white-space: nowrap; /* Prevent text from wrapping */
+  padding: 8px;
+}
+
+/* Style for each item in the order */
+.cartItem {
+  margin-top: 10px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  display: flex; /* Use flexbox for layout */
+  align-items: center; /* Center items vertically */
+}
+
+/* Style for the item image */
+.itemImage {
+  max-width: 80px; /* Adjust the maximum width of the image */
+  max-height: 80px; /* Adjust the maximum height of the image */
+  margin-right: 10px;
+}

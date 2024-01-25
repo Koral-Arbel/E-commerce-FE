@@ -1,32 +1,32 @@
 import React, { useContext, useEffect, useState } from "react";
+import {
+  Button,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Typography,
+} from "@mui/material";
+
 import { checkOutOrder, getAllOrders } from "../../services/api";
 import AuthContext from "../context/AuthProvider";
 import UserProfileContext from "../context/UserProfileContext";
 import CartContext from "../context/CartContext";
 import OrdersContext from "../context/OrdersContext";
 import CartItem from "./CartItem";
+import "./Cart.module.css";
 
-const Cart = () => {
+function Cart() {
   const { auth } = useContext(AuthContext);
   const { userDetails } = useContext(UserProfileContext);
   const { cart, setCart } = useContext(CartContext);
   const { orders, setOrders } = useContext(OrdersContext);
-  const [orderDetails, setOrderDetails] = useState({
-    userId: userDetails.id,
-    orderDate: null,
-    shippingAddress: "",
-    status: "TEMP",
-    orderNumber: null,
-    items: [], // Initialize items as an empty array
-  });
+  const [selectedOrder, setSelectedOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  const splitOrdersByStatus = (orders) => {
-    const tempOrders = orders.filter((order) => order.status === "TEMP");
-    const closeOrders = orders.filter((order) => order.status === "CLOSE");
-    return [tempOrders, closeOrders];
-  };
 
   const handlerLoadCart = async () => {
     try {
@@ -41,27 +41,8 @@ const Cart = () => {
         const cartItems = response.data.map((order) => order.item).flat();
         setCart(cartItems);
 
-        const orderDetailsData = response.data[0].order || {};
-        const items = cartItems.map((cartItem) => ({
-          id: cartItem.id,
-          title: cartItem.title,
-          photo: cartItem.photo,
-          price: cartItem.price,
-          availableStock: cartItem.availableStock,
-          quantity: cartItem.quantity,
-        }));
-
-        setOrderDetails({
-          userId: userDetails.id,
-          orderDate: orderDetailsData.orderDate,
-          shippingAddress: orderDetailsData.shippingAddress,
-          status: orderDetailsData.status,
-          orderNumber: orderDetailsData.id,
-          items: items,
-        });
+        setLoading(false);
       }
-
-      setLoading(false);
     } catch (error) {
       console.error("Error fetching cart details:", error);
       setError("Error fetching cart details. Please try again later.");
@@ -73,120 +54,103 @@ const Cart = () => {
     handlerLoadCart();
   }, [auth.token, userDetails.id, setCart]);
 
-  const handlerCheckout = async () => {
-    try {
-      if (orderDetails.orderNumber && cart.length > 0 && auth.token) {
-        await checkOutOrder(orderDetails.orderNumber, {}, auth.token);
-
-        if (orderDetails.status === "TEMP") {
-          setOrders((prevOrders) => [
-            {
-              orderNumber: orderDetails.orderNumber,
-              orderDate: new Date().toISOString(),
-              status: "CLOSE",
-              items: orderDetails.items,
-            },
-            ...prevOrders,
-          ]);
-        }
-
-        setOrderDetails((prevOrder) => ({
-          ...prevOrder,
-          status: "CLOSE",
-          orderDate: new Date().toISOString(),
-        }));
-
-        setCart([]);
-      }
-    } catch (error) {
-      console.error("Error during checkout:", error);
-    }
+  const handleOrderClick = (order) => {
+    setSelectedOrder(order);
   };
 
-  function calculateTotalPrice(orderItems) {
-    return orderItems.reduce((total, item) => {
-      const itemPrice = item.price || 0;
-      return total + itemPrice;
-    }, 0);
-  }
+  const handleCloseOrder = () => {
+    setSelectedOrder(null);
+  };
 
   return (
-    <div>
+    <div style={{ textAlign: "center", margin: "20px 0" }}>
       <h1>My Cart</h1>
 
       {loading && <p>Loading...</p>}
       {error && <p style={{ color: "red" }}>{error}</p>}
-      {orderDetails.orderNumber && (
-        <>
-          {orderDetails.status === "TEMP" && (
-            <div>
-              <h2>Items in Cart</h2>
-              {cart.length > 0 ? (
-                <ul>
-                  {cart.map((item) => (
-                    <CartItem key={item.id} item={item} />
-                  ))}
-                </ul>
-              ) : (
-                <p>Your cart is empty.</p>
-              )}
-              <button onClick={handlerCheckout}>Checkout</button>
-            </div>
-          )}
 
-          {orderDetails.status === "CLOSE" && (
-            <div>
-              <h2>Items Purchased</h2>
-              {orderDetails.items.length > 0 ? (
-                <div>
-                  {orderDetails.items.map((orderItem) => (
-                    <CartItem key={orderItem.id} item={orderItem} />
-                  ))}
-                </div>
-              ) : (
-                <p>No items purchased.</p>
-              )}
-              <p>Total Price: ${calculateTotalPrice(orderDetails.items)}</p>
-            </div>
-          )}
-
-          <h2>Order Details</h2>
-          <p>Order Number: {orderDetails.orderNumber}</p>
-          <p>Order Date: {new Date(orderDetails.orderDate).toLocaleString()}</p>
-          <p>Shipping Address: {orderDetails.shippingAddress}</p>
-          <p>Status: {orderDetails.status}</p>
-        </>
+      {/* Render detailed information for the selected order */}
+      {selectedOrder && (
+        <div>
+          <Typography
+            variant="h6"
+            style={{ fontSize: "1.5em", fontWeight: "bold" }}
+          >
+            Selected Order Details
+          </Typography>
+          <p>Order Number: {selectedOrder.orderNumber}</p>
+          <p>
+            Order Date: {new Date(selectedOrder.orderDate).toLocaleString()}
+          </p>
+          {/* Display additional information as needed */}
+          <TableContainer component={Paper} className="closedOrdersTable">
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Item</TableCell>
+                  <TableCell>Quantity</TableCell>
+                  <TableCell>Price</TableCell>
+                  <TableCell>Photo</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {selectedOrder.items.map((orderItem) => (
+                  <TableRow key={orderItem.id}>
+                    <TableCell>{orderItem.title}</TableCell>
+                    <TableCell>{orderItem.quantity}</TableCell>
+                    <TableCell>${orderItem.price}</TableCell>
+                    <TableCell>
+                      <img
+                        src={orderItem.photo}
+                        alt={orderItem.title}
+                        style={{ width: "50px", height: "50px" }}
+                      />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleCloseOrder}
+          >
+            Close Order
+          </Button>
+        </div>
       )}
 
+      {/* Render a list of closed orders */}
       {orders.length > 0 && (
-        <div>
-          <h2>Closed Orders</h2>
+        <div className="closedOrdersContainer">
+          <Typography
+            variant="h6"
+            style={{ fontSize: "1.5em", fontWeight: "bold" }}
+          >
+            Closed Orders
+          </Typography>
           {orders.map((order) => (
-            <div key={order.orderNumber}>
+            <div
+              key={order.orderNumber}
+              style={{
+                margin: "20px 0",
+                cursor: "pointer",
+                padding: "10px",
+                border: "1px solid #ddd",
+                borderRadius: "5px",
+              }}
+              onClick={() => handleOrderClick(order)}
+            >
               <h3>Order Number: {order.orderNumber}</h3>
               <p>Order Date: {new Date(order.orderDate).toLocaleString()}</p>
-              <p>Status: {order.status}</p>
-              {order.status === "CLOSE" && (
-                <>
-                  <h4>Items Purchased</h4>
-                  {order.items.length > 0 ? (
-                    <ul>
-                      {order.items.map((orderItem) => (
-                        <CartItem key={orderItem.id} item={orderItem} />
-                      ))}
-                    </ul>
-                  ) : (
-                    <p>No items purchased.</p>
-                  )}
-                  <p>Total Price: ${order.totalPrice}</p>
-                </>
-              )}
+              {/* Additional information can be displayed here if needed */}
             </div>
           ))}
         </div>
       )}
     </div>
   );
-};
+}
 
 export default Cart;

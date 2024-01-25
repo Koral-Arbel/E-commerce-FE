@@ -46,15 +46,15 @@ function FavoriteList() {
     };
 
     fetchFavoriteItems();
-  }, [auth.token, userDetails.id, userDetails]); // הוסף userDetails לרשימת התלמודות
+  }, [auth.token, userDetails.id]);
 
   const handlerAddCart = async (itemId) => {
     try {
-      await addItemToCart(
-        { userId: userDetails.id, itemId: itemId.id },
-        auth.token
-      ); // <-- שינוי כאן
-      setCart((prevItems) => [...prevItems, { itemId }]);
+      if (itemId) {
+        // Check if itemId is defined
+        await addItemToCart({ userId: userDetails.id, itemId }, auth.token);
+        setCart((prevItems) => [...prevItems, itemId]);
+      }
     } catch (error) {
       console.error("Error adding item to cart:", error);
       setError(error.message || "An error occurred while adding item to cart");
@@ -98,7 +98,7 @@ function FavoriteList() {
                   variant="contained"
                   color="primary"
                 >
-                  Add to Favorites
+                  Add to Cart
                 </Button>
                 <Button
                   onClick={() => handlerRemoveItemFavorite(item.id)}
