@@ -46,7 +46,7 @@ function FavoriteList() {
     };
 
     fetchFavoriteItems();
-  }, [auth.token, userDetails.id]);
+  }, [auth.token, userDetails.id, userDetails]); // הוסף userDetails לרשימת התלמודות
 
   const handlerAddCart = async (itemId) => {
     try {

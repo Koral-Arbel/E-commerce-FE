@@ -4,6 +4,7 @@ const UserProfileContext = createContext({});
 
 export const UserProfileProvider = ({ children }) => {
   const [userDetails, setUserDetails] = useState();
+
   useEffect(() => {
     const storedUserDetails = localStorage.getItem("userDetails");
     if (storedUserDetails) {
