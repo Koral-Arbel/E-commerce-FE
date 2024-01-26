@@ -34,6 +34,7 @@ function Cart() {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [expandedOrder, setExpandedOrder] = useState(null);
 
   const splitOrdersByStatus = (orders) => {
     const tempOrders = orders.filter((order) => order.status === "TEMP");
@@ -85,6 +86,12 @@ function Cart() {
   useEffect(() => {
     handlerLoadCart();
   }, [auth.token, userDetails.id, setCart]);
+
+  const handleCloseOrder = (orderNumber) => {
+    setExpandedOrder((prevExpandedOrder) =>
+      prevExpandedOrder === orderNumber ? null : orderNumber
+    );
+  };
 
   const handlerCheckout = async () => {
     try {
@@ -176,44 +183,53 @@ function Cart() {
                 <Table>
                   <TableBody>
                     {orders.map((order) => (
-                      <React.Fragment key={order.orderNumber}>
-                        <TableRow>
-                          <TableCell>Order Number</TableCell>
-                          <TableCell>{order.orderNumber}</TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableCell>Order Date</TableCell>
-                          <TableCell>
-                            {new Date(order.orderDate).toLocaleString()}
-                          </TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableCell>Status</TableCell>
-                          <TableCell>{order.status}</TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableCell>Total Price</TableCell>
-                          <TableCell>
-                            ${calculateTotalPrice(order.items)}
-                          </TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableCell>Items Purchased</TableCell>
-                          <TableCell>
-                            <Table>
-                              <TableBody>
-                                <TableRow>
-                                  {order.items.map((orderItem) => (
-                                    <TableCell key={orderItem.id}>
-                                      <CartItem item={orderItem} />
-                                    </TableCell>
-                                  ))}
-                                </TableRow>
-                              </TableBody>
-                            </Table>
-                          </TableCell>
-                        </TableRow>
-                      </React.Fragment>
+                      <div
+                        key={order.orderNumber}
+                        className="order-container"
+                        onClick={() => setExpandedOrder(order.orderNumber)}
+                      >
+                        <Typography variant="h6" className="order-number">
+                          Order Number: {order.orderNumber}
+                        </Typography>
+                        {expandedOrder === order.orderNumber && (
+                          <React.Fragment>
+                            {/* Render other summary information here */}
+                            <TableRow>
+                              <TableCell>Order Date</TableCell>
+                              <TableCell>
+                                {new Date(order.orderDate).toLocaleString()}
+                              </TableCell>
+                            </TableRow>
+                            <TableRow>
+                              <TableCell>Status</TableCell>
+                              <TableCell>{order.status}</TableCell>
+                            </TableRow>
+                            <TableRow>
+                              <TableCell>Total Price</TableCell>
+                              <TableCell>
+                                ${calculateTotalPrice(order.items)}
+                              </TableCell>
+                            </TableRow>
+                            <TableRow>
+                              <TableCell>Items Purchased</TableCell>
+                              <TableCell>
+                                {/* Render the items table here */}
+                                <Table>
+                                  <TableBody>
+                                    <TableRow>
+                                      {order.items.map((orderItem) => (
+                                        <TableCell key={orderItem.id}>
+                                          <CartItem item={orderItem} />
+                                        </TableCell>
+                                      ))}
+                                    </TableRow>
+                                  </TableBody>
+                                </Table>
+                              </TableCell>
+                            </TableRow>
+                          </React.Fragment>
+                        )}
+                      </div>
                     ))}
                   </TableBody>
                 </Table>
