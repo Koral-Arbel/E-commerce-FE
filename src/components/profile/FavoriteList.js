@@ -26,7 +26,7 @@ function FavoriteList() {
   useEffect(() => {
     const fetchFavoriteItems = async () => {
       try {
-        if (!auth || !auth.token || !userDetails.id) {
+        if (!auth || !auth.token || !userDetails) {
           setLoading(false);
           return;
         }
@@ -46,12 +46,12 @@ function FavoriteList() {
     };
 
     fetchFavoriteItems();
-  }, [auth.token, userDetails.id]);
+  }, [auth.token, userDetails]);
 
   const handlerAddCart = async (itemId) => {
     try {
       if (itemId) {
-        await addItemToCart({ userId: userDetails.id, itemId }, auth.token);
+        await addItemToCart({ userId: userDetails, itemId }, auth.token);
         setCart((prevItems) => {
           // Check if the item is already in the cart
           if (!prevItems.includes(itemId)) {
@@ -81,7 +81,6 @@ function FavoriteList() {
 
   const isItemInCart = (itemId) => {
     return cart.includes(itemId);
-    return false; // Update this line with your actual logic
   };
 
   return (
