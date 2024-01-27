@@ -33,7 +33,7 @@ function Home() {
     handlerShowItems();
     handlerUserProfile();
     checkOpenOrder();
-  }, [auth.token, userDetails, showItems]);
+  }, [auth.token]);
   const checkOpenOrder = async () => {
     try {
       const response = await getOpenOrder(userDetails.id, auth.token);

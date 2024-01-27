@@ -12,16 +12,16 @@ import {
 } from "../../services/api";
 import AuthContext from "../context/AuthProvider";
 import UserProfileContext from "../context/UserProfileContext";
-import ItemsContext from "../context/ItemsContext";
 import { Card, Grid, Button, Typography } from "@mui/material";
 
 function FavoriteList() {
   const { auth } = useContext(AuthContext);
   const [favoriteItems, setFavoriteItems] = useState([]);
+  const [cart, setCart] = useState([]);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { userDetails } = useContext(UserProfileContext);
-  const { items } = useContext(ItemsContext);
 
   useEffect(() => {
     const fetchFavoriteItems = async () => {
@@ -52,14 +52,19 @@ function FavoriteList() {
     try {
       if (itemId) {
         await addItemToCart({ userId: userDetails.id, itemId }, auth.token);
-        // setCart((prevItems) => [...prevItems, itemId]); // Assuming you have a cart state
+        setCart((prevItems) => {
+          // Check if the item is already in the cart
+          if (!prevItems.includes(itemId)) {
+            return [...prevItems, itemId];
+          }
+          return prevItems; // If item is already in cart, return the current state
+        });
       }
     } catch (error) {
       console.error("Error adding item to cart:", error);
       setError(error.message || "An error occurred while adding item to cart");
     }
   };
-
   const handlerRemoveItemFavorite = async (itemId) => {
     try {
       await removeFavoriteItem(itemId, auth.token);
@@ -75,9 +80,7 @@ function FavoriteList() {
   };
 
   const isItemInCart = (itemId) => {
-    // Implement your logic to check if the item is in the cart
-    // Assuming you have a cart state
-    // return cart.includes(itemId);
+    return cart.includes(itemId);
     return false; // Update this line with your actual logic
   };
 

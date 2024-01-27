@@ -57,28 +57,38 @@ function Cart() {
       const response = await getAllOrders(userDetails.id, auth.token);
 
       if (response.data) {
-        const cartItems = response.data.map((order) => order.item).flat();
-        setCart(cartItems);
+        const tempOrders = response.data.filter(
+          (order) => order.order.status === "TEMP"
+        );
 
-        const orderDetailsData = response.data[0]?.order || {};
-        setOrderDetails({
-          ...orderDetails,
-          orderNumber: orderDetailsData.id,
-          orderDate: orderDetailsData.orderDate,
-          shippingAddress: orderDetailsData.shippingAddress,
-          items: cartItems.map((cartItem) => ({
-            id: cartItem.id,
-            title: cartItem.title,
-            photo: cartItem.photo,
-            price: cartItem.price,
-            availableStock: cartItem.availableStock,
-            quantity: cartItem.quantity,
-          })),
-        });
+        if (tempOrders.length > 0) {
+          // Merge items from all TEMP orders into a single array
+          const cartItems = tempOrders.map((order) => order.item).flat();
 
-        // If the order was closed, clear the cart
-        if (orderDetailsData.status === "CLOSE") {
-          setCart([]);
+          setCart(cartItems);
+
+          // Assuming you want details from the first TEMP order
+          const orderDetailsData = tempOrders[0].order || {};
+
+          setOrderDetails({
+            ...orderDetails,
+            orderNumber: orderDetailsData.id,
+            orderDate: orderDetailsData.orderDate,
+            shippingAddress: orderDetailsData.shippingAddress,
+            items: cartItems.map((cartItem) => ({
+              id: cartItem.id,
+              title: cartItem.title,
+              photo: cartItem.photo,
+              price: cartItem.price,
+              availableStock: cartItem.availableStock,
+              quantity: cartItem.quantity,
+            })),
+          });
+
+          // If the first TEMP order was closed, clear the cart
+          if (orderDetailsData.status === "CLOSE") {
+            setCart([]);
+          }
         }
       }
 
