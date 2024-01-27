@@ -151,20 +151,9 @@ function Cart() {
           orderDate: null,
           shippingAddress: "",
           status: "TEMP", // Set the status for the new order
-          orderNumber: null,
+          orderNumber: "NEW", // Set a new order number (or any other identifier)
           items: [],
         });
-
-        // Create a new order
-        const newOrderResponse = await createNewOrder(
-          { userId: userDetails.id },
-          auth.token
-        );
-        const newOrderNumber = newOrderResponse.data.id;
-        setOrderDetails((prevOrder) => ({
-          ...prevOrder,
-          orderNumber: newOrderNumber,
-        }));
 
         // Reload the cart to get the updated list
         handlerLoadCart();
