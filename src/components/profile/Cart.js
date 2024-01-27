@@ -169,7 +169,6 @@ function Cart() {
       return total + itemPrice;
     }, 0);
   }
-
   return (
     <div>
       <h1>My Cart</h1>
@@ -185,13 +184,13 @@ function Cart() {
               <TableContainer component={Paper}>
                 <Table>
                   <TableBody>
-                    <TableRow>
-                      {cart.map((item) => (
-                        <TableCell key={item.id}>
+                    {cart.map((item) => (
+                      <TableRow key={item.id}>
+                        <TableCell>
                           <CartItem item={item} />
                         </TableCell>
-                      ))}
-                    </TableRow>
+                      </TableRow>
+                    ))}
                   </TableBody>
                 </Table>
               </TableContainer>
@@ -216,16 +215,14 @@ function Cart() {
               <Table>
                 <TableBody>
                   {orders.map((order) => (
-                    <div
-                      key={order.orderNumber}
-                      className="order-container"
-                      onClick={() => setExpandedOrder(order.orderNumber)}
-                    >
-                      <Typography variant="h6" className="order-number">
-                        Order Number: {order.orderNumber}
-                      </Typography>
+                    <React.Fragment key={order.orderNumber}>
+                      <TableRow
+                        onClick={() => setExpandedOrder(order.orderNumber)}
+                      >
+                        <TableCell>Order Number: {order.orderNumber}</TableCell>
+                      </TableRow>
                       {expandedOrder === order.orderNumber && (
-                        <React.Fragment>
+                        <>
                           <TableRow>
                             <TableCell>Order Date</TableCell>
                             <TableCell>
@@ -258,9 +255,9 @@ function Cart() {
                               </Table>
                             </TableCell>
                           </TableRow>
-                        </React.Fragment>
+                        </>
                       )}
-                    </div>
+                    </React.Fragment>
                   ))}
                 </TableBody>
               </Table>
