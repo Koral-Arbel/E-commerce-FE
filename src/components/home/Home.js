@@ -22,7 +22,7 @@ function Home() {
   const [orderNumber, setOrderNumber] = useState(null);
 
   const [items, setItems] = useState([]);
-  const [setFavoriteItems] = useState([]);
+  const [favoriteItems, setFavoriteItems] = useState([]);
   const [cart, setCart] = useState([]);
 
   const [showItems, setShowItems] = useState(false);
@@ -33,8 +33,7 @@ function Home() {
     handlerShowItems();
     handlerUserProfile();
     checkOpenOrder();
-  }, []);
-
+  }, [auth.token, userDetails, showItems]);
   const checkOpenOrder = async () => {
     try {
       const response = await getOpenOrder(userDetails.id, auth.token);
@@ -73,7 +72,10 @@ function Home() {
   const handleAddItemToFavorites = async (itemId) => {
     try {
       await addFavoriteItem({ userId: userDetails.id, itemId }, auth.token);
-      setFavoriteItems((prevItems) => [...prevItems, { itemId }]);
+      setFavoriteItems((prevItems) => [...prevItems, itemId]);
+
+      // Re-run checkOpenOrder after adding item to favorites
+      checkOpenOrder();
     } catch (error) {
       console.log("Adding item to favorites:", itemId);
       setError();
@@ -108,8 +110,9 @@ function Home() {
 
   const handlerAddItemToCart = async (itemId) => {
     try {
-      // If there is no open order, create a new order
+      // Check if there is an open order with status "TEMP"
       if (!showItems) {
+        // If no open order, create a new order
         await handleCreateOrder();
       }
 

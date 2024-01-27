@@ -17,7 +17,7 @@ const DELETE_ORDER_ITEM = (itemId) => `/orderItem/delete/${itemId}`;
 
 const FAVORITE_ITEMS = (userId) => `/favoriteItem/all/${userId}`;
 const ADD_FAVORITE_ITEMS = () => `/favoriteItem/itemAddFavorite/`;
-const REMOVE_FAVORITE_ITEM = (itemId) => `/favoriteItem/${itemId}/delete`;
+const REMOVE_FAVORITE_ITEM = (itemId) => `/favoriteItem/deleteItem/${itemId}`;
 
 const AUTHENTICATE = () => `/api/public/authenticate`;
 const TEST_API = () => `/api/public/test1`;

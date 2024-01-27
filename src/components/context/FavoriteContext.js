@@ -3,10 +3,10 @@ import { createContext, useState } from "react";
 const FavouritesContext = createContext({});
 
 export const FavouritesProvider = ({ children }) => {
-  const [favourite, setFavourite] = useState({});
+  const [favoriteItems, setFavoriteItems] = useState({});
 
   return (
-    <FavouritesContext.Provider value={{ favourite, setFavourite }}>
+    <FavouritesContext.Provider value={{ favoriteItems, setFavoriteItems }}>
       {children}
     </FavouritesContext.Provider>
   );

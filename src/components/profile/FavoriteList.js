@@ -1,21 +1,23 @@
 import React, { useContext, useState, useEffect } from "react";
-import AuthContext from "../context/AuthProvider";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faHeart,
+  faShoppingCart,
+  faTrash,
+} from "@fortawesome/free-solid-svg-icons";
 import {
   addItemToCart,
   getFavoriteItems,
   removeFavoriteItem,
 } from "../../services/api";
+import AuthContext from "../context/AuthProvider";
 import UserProfileContext from "../context/UserProfileContext";
 import ItemsContext from "../context/ItemsContext";
-
-import "./FavoriteList.module.css";
-import { Button } from "@mui/material";
+import { Card, Grid, Button, Typography } from "@mui/material";
 
 function FavoriteList() {
   const { auth } = useContext(AuthContext);
   const [favoriteItems, setFavoriteItems] = useState([]);
-  const [cart, setCart] = useState([]);
-
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { userDetails } = useContext(UserProfileContext);
@@ -30,8 +32,6 @@ function FavoriteList() {
         }
 
         const userId = userDetails.id;
-        console.log("auth object:", auth);
-        console.log("userId:", userId);
         const response = await getFavoriteItems(userId, auth.token);
         const fetchedItems = response.data;
         setFavoriteItems(fetchedItems);
@@ -51,9 +51,8 @@ function FavoriteList() {
   const handlerAddCart = async (itemId) => {
     try {
       if (itemId) {
-        // Check if itemId is defined
         await addItemToCart({ userId: userDetails.id, itemId }, auth.token);
-        setCart((prevItems) => [...prevItems, itemId]);
+        // setCart((prevItems) => [...prevItems, itemId]); // Assuming you have a cart state
       }
     } catch (error) {
       console.error("Error adding item to cart:", error);
@@ -75,6 +74,13 @@ function FavoriteList() {
     }
   };
 
+  const isItemInCart = (itemId) => {
+    // Implement your logic to check if the item is in the cart
+    // Assuming you have a cart state
+    // return cart.includes(itemId);
+    return false; // Update this line with your actual logic
+  };
+
   return (
     <div style={{ textAlign: "center", margin: "20px 0" }}>
       <h2>Favorite Items</h2>
@@ -85,19 +91,29 @@ function FavoriteList() {
       ) : favoriteItems.length === 0 ? (
         <p>There are no favorite items</p>
       ) : (
-        <div className="favorite-items-container">
+        <Grid container spacing={2} justifyContent="center">
           {favoriteItems.map((item) => (
-            <div key={item.id} className="favorite-item-card">
-              <img src={item.photo} alt={item.title} />
-              <div className="item-details">
-                <h3>{item.title}</h3>
-                <p>Price: ${item.price}</p>
-                <p>Available Stock: {item.availableStock}</p>
+            <Grid item key={item.id} xs={12} sm={6} md={4} lg={3}>
+              <Card sx={{ minWidth: 275 }}>
+                <img
+                  src={item.photo}
+                  alt={item.title}
+                  style={{ maxWidth: "100%", height: "auto" }}
+                />
+                <Typography variant="h6">{item.title}</Typography>
+                <Typography variant="body1">Price: ${item.price}</Typography>
+                <Typography variant="body1">
+                  Available Stock: {item.availableStock}
+                </Typography>
                 <Button
                   onClick={() => handlerAddCart(item.id)}
                   variant="contained"
                   color="primary"
                 >
+                  <FontAwesomeIcon
+                    icon={faShoppingCart}
+                    style={{ marginRight: "8px" }}
+                  />
                   Add to Cart
                 </Button>
                 <Button
@@ -105,12 +121,19 @@ function FavoriteList() {
                   variant="contained"
                   color="secondary"
                 >
-                  Delete Item
+                  <FontAwesomeIcon
+                    icon={faTrash}
+                    style={{
+                      marginRight: "8px",
+                      color: isItemInCart(item.id) ? "red" : "gray",
+                    }}
+                  />
+                  Delete
                 </Button>
-              </div>
-            </div>
+              </Card>
+            </Grid>
           ))}
-        </div>
+        </Grid>
       )}
     </div>
   );
