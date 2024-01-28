@@ -61,6 +61,10 @@ function Cart() {
           (order) => order.order.status === "TEMP"
         );
 
+        const closedOrders = response.data.filter(
+          (order) => order.order.status === "CLOSE"
+        );
+
         if (tempOrders.length > 0) {
           // Merge items from all TEMP orders into a single array
           const cartItems = tempOrders.map((order) => order.item).flat();
@@ -90,6 +94,23 @@ function Cart() {
             setCart([]);
           }
         }
+
+        // Set the closed orders in the state
+        setOrders(
+          closedOrders.map((closedOrder) => ({
+            orderNumber: closedOrder.order.id,
+            orderDate: closedOrder.order.orderDate,
+            status: closedOrder.order.status,
+            items: closedOrder.item.map((orderItem) => ({
+              id: orderItem.id,
+              title: orderItem.title,
+              photo: orderItem.photo,
+              price: orderItem.price,
+              availableStock: orderItem.availableStock,
+              quantity: orderItem.quantity,
+            })),
+          }))
+        );
       }
 
       setLoading(false);
