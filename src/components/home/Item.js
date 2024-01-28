@@ -7,8 +7,7 @@ function Item({ item, handleAddItemToCart, handleAddItemToFavorites }) {
   const [quantity, setQuantity] = useState(1);
 
   const handleQuantityChange = (event) => {
-    const newQuantity = event.target.value;
-    setQuantity(newQuantity);
+    setQuantity(Number(event.target.value));
   };
 
   return (

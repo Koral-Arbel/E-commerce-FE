@@ -46,7 +46,7 @@ function FavoriteList() {
     };
 
     fetchFavoriteItems();
-  }, [auth.token, userDetails]);
+  }, [auth?.token, userDetails?.id]);
 
   const handlerAddCart = async (itemId) => {
     try {

@@ -14,17 +14,17 @@ ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>
       <AuthProvider>
-        <ItemsProvider>
-          <UserProfileProvider>
+        <UserProfileProvider>
+          <ItemsProvider>
             <CartProvider>
-              <FavouritesProvider>
-                <OrdersProvider>
+              <OrdersProvider>
+                <FavouritesProvider>
                   <App />
-                </OrdersProvider>
-              </FavouritesProvider>
+                </FavouritesProvider>
+              </OrdersProvider>
             </CartProvider>
-          </UserProfileProvider>
-        </ItemsProvider>
+          </ItemsProvider>
+        </UserProfileProvider>
       </AuthProvider>
     </BrowserRouter>
   </React.StrictMode>,

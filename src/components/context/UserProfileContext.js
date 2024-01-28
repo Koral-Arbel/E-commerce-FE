@@ -1,16 +1,21 @@
-import React, { createContext, useEffect, useState } from "react";
+// UserProfileContext.js
+import React, { createContext, useEffect, useMemo, useState } from "react";
 
 const UserProfileContext = createContext({});
 
 export const UserProfileProvider = ({ children }) => {
-  const [userDetails, setUserDetails] = useState();
+  const storedUserDetails = useMemo(() => {
+    const storedUserDetails = localStorage.getItem("userDetails");
+    return storedUserDetails ? JSON.parse(storedUserDetails) : null;
+  }, []);
+
+  const [userDetails, setUserDetails] = useState(storedUserDetails);
 
   useEffect(() => {
-    const storedUserDetails = localStorage.getItem("userDetails");
-    if (storedUserDetails) {
-      setUserDetails(JSON.parse(storedUserDetails));
+    if (userDetails) {
+      localStorage.setItem("userDetails", JSON.stringify(userDetails));
     }
-  }, []);
+  }, [userDetails]);
 
   return (
     <UserProfileContext.Provider value={{ userDetails, setUserDetails }}>
