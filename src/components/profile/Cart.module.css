@@ -73,5 +73,25 @@
 
 .closedOrderItem:hover {
   /* עיצוב כאשר יש hover על פריט בהזמנה סגורה */
-  background-color: #f0f0f0;
+  background-color: #10d8ce;
+}
+/* Cart.module.css */
+
+.closedOrdersTable {
+  display: flex;
+  flex-direction: column;
+}
+
+.orderDetail {
+  display: flex;
+  justify-content: space-between;
+}
+
+.itemsList {
+  display: flex;
+  flex-direction: row;
+}
+
+.item {
+  margin-right: 8px; /* כדי ליצור מרווח בין פריטים */
 }

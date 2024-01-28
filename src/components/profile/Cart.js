@@ -6,10 +6,12 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableContainer,
-  TableHead,
+  Card,
+  CardContent,
   TableRow,
   Collapse,
+  Experimental_CssVarsProvider,
+  CardActionArea,
 } from "@mui/material";
 import AuthContext from "../context/AuthProvider";
 import UserProfileContext from "../context/UserProfileContext";
@@ -217,50 +219,52 @@ function Cart() {
             <Typography variant="h6">Closed Orders</Typography>
             <Paper className="closedOrdersTable">
               {orders.map((order) => (
-                <React.Fragment key={order.orderNumber}>
-                  <TableRow onClick={() => handleCloseOrder(order.orderNumber)}>
-                    <TableCell>Order Number: {order.orderNumber}</TableCell>
-                  </TableRow>
-                  <Collapse in={expandedOrder === order.orderNumber}>
-                    <Table>
-                      <TableBody>
-                        <TableRow>
-                          <TableCell>Order Date</TableCell>
-                          <TableCell>
-                            {new Date(order.orderDate).toLocaleString()}
-                          </TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableCell>Status</TableCell>
-                          <TableCell>{order.status}</TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableCell>Total Price</TableCell>
-                          <TableCell>
-                            ${calculateTotalPrice(order.items)}
-                          </TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableCell>Items Purchased</TableCell>
-                          <TableCell>
-                            <Paper>
-                              {order.items.map((orderItem) => (
-                                <CartItem
-                                  key={orderItem.id}
-                                  item={orderItem}
-                                  expanded={expandedOrder === order.orderNumber}
-                                  onOrderClick={() =>
-                                    handleOrderClick(order.orderNumber)
-                                  }
-                                />
-                              ))}
-                            </Paper>
-                          </TableCell>
-                        </TableRow>
-                      </TableBody>
-                    </Table>
-                  </Collapse>
-                </React.Fragment>
+                <Card
+                  key={order.orderNumber}
+                  onClick={() => handleCloseOrder(order.orderNumber)}
+                  className="closedOrderCard"
+                >
+                  <CardContent>
+                    <Typography variant="subtitle1">
+                      Order Number: {order.orderNumber}
+                    </Typography>
+                    <Collapse in={expandedOrder === order.orderNumber}>
+                      <CardActionArea>
+                        <TableBody>
+                          <TableRow>
+                            <TableCell>Order Date:</TableCell>
+                            <TableCell>
+                              {new Date(order.orderDate).toLocaleString()}
+                            </TableCell>
+                            <TableCell>Status:</TableCell>
+                            <TableCell>{order.status}</TableCell>
+                            <TableCell>Total Price:</TableCell>
+                            <TableCell>
+                              ${calculateTotalPrice(order.items)}
+                            </TableCell>
+                            <TableCell>Items Purchased:</TableCell>
+                            <TableCell>
+                              <Paper style={{ display: "flex" }}>
+                                {order.items.map((orderItem) => (
+                                  <CartItem
+                                    key={orderItem.id}
+                                    item={orderItem}
+                                    expanded={
+                                      expandedOrder === order.orderNumber
+                                    }
+                                    onOrderClick={() =>
+                                      handleOrderClick(order.orderNumber)
+                                    }
+                                  />
+                                ))}
+                              </Paper>
+                            </TableCell>
+                          </TableRow>
+                        </TableBody>
+                      </CardActionArea>
+                    </Collapse>
+                  </CardContent>
+                </Card>
               ))}
             </Paper>
           </div>
