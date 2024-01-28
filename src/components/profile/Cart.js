@@ -1,25 +1,22 @@
 import React, { useContext, useEffect, useState } from "react";
 import {
   Button,
+  Typography,
+  Paper,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
-  Typography,
+  Collapse,
 } from "@mui/material";
 import AuthContext from "../context/AuthProvider";
 import UserProfileContext from "../context/UserProfileContext";
 import OrdersContext from "../context/OrdersContext";
 import CartItem from "./CartItem";
+import { checkOutOrder, getAllOrders } from "../../services/api";
 import "./Cart.module.css";
-import {
-  checkOutOrder,
-  createNewOrder,
-  getAllOrders,
-} from "../../services/api";
 
 function Cart() {
   const { auth } = useContext(AuthContext);
@@ -66,12 +63,10 @@ function Cart() {
         );
 
         if (tempOrders.length > 0) {
-          // Merge items from all TEMP orders into a single array
           const cartItems = tempOrders.map((order) => order.item).flat();
 
           setCart(cartItems);
 
-          // Assuming you want details from the first TEMP order
           const orderDetailsData = tempOrders[0].order || {};
 
           setOrderDetails({
@@ -89,13 +84,11 @@ function Cart() {
             })),
           });
 
-          // If the first TEMP order was closed, clear the cart
           if (orderDetailsData.status === "CLOSE") {
             setCart([]);
           }
         }
 
-        // Set the closed orders in the state
         setOrders(
           closedOrders.map((closedOrder) => ({
             orderNumber: closedOrder.order.id,
@@ -127,11 +120,9 @@ function Cart() {
     );
   };
 
-  const handleOrderClick = () => {
+  const handleOrderClick = (orderNumber) => {
     setExpandedOrder((prevExpandedOrder) =>
-      prevExpandedOrder === orderDetails.orderNumber
-        ? null
-        : orderDetails.orderNumber
+      prevExpandedOrder === orderNumber ? null : orderNumber
     );
   };
 
@@ -143,19 +134,16 @@ function Cart() {
         auth.token &&
         orderDetails.status === "TEMP"
       ) {
-        // Checkout the current order
         await checkOutOrder(orderDetails.orderNumber, {}, auth.token);
 
         const orderItems = orderDetails.items;
 
-        // Remove the checked out items from the cart
         setCart((prevCart) =>
           prevCart.filter((cartItem) =>
             orderItems.every((orderItem) => orderItem.id !== cartItem.id)
           )
         );
 
-        // Add the current order to the closed orders list
         setOrders((prevOrders) => [
           {
             orderNumber: orderDetails.orderNumber,
@@ -166,17 +154,15 @@ function Cart() {
           ...prevOrders,
         ]);
 
-        // Clear the order details for the new order
         setOrderDetails({
           userId: userDetails,
-          orderDate: null,
+          orderDate: orderDetails.Date.toLocaleString,
           shippingAddress: "",
-          status: "TEMP", // Set the status for the new order
-          orderNumber: "NEW", // Set a new order number (or any other identifier)
+          status: "TEMP",
+          orderNumber: "NEW",
           items: [],
         });
 
-        // Reload the cart to get the updated list
         handlerLoadCart();
       }
     } catch (error) {
@@ -185,11 +171,9 @@ function Cart() {
   };
 
   function calculateTotalPrice(orderItems) {
-    return orderItems.reduce((total, item) => {
-      const itemPrice = item.price || 0;
-      return total + itemPrice;
-    }, 0);
+    return orderItems.reduce((total, item) => total + (item.price || 0), 0);
   }
+
   return (
     <div>
       <h1>My Cart</h1>
@@ -202,19 +186,18 @@ function Cart() {
           <>
             <Typography variant="h6">Items in Cart</Typography>
             {cart.length > 0 ? (
-              <TableContainer component={Paper}>
-                <Table>
-                  <TableBody>
-                    {cart.map((item) => (
-                      <TableRow key={item.id}>
-                        <TableCell>
-                          <CartItem item={item} />
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
+              <Paper>
+                {cart.map((item) => (
+                  <CartItem
+                    key={item.id}
+                    item={item}
+                    expanded={expandedOrder === orderDetails.orderNumber}
+                    onOrderClick={() =>
+                      handleOrderClick(orderDetails.orderNumber)
+                    }
+                  />
+                ))}
+              </Paper>
             ) : (
               <Typography variant="body2">Your cart is empty.</Typography>
             )}
@@ -232,57 +215,54 @@ function Cart() {
         {orders.length > 0 && (
           <div className="closedOrdersContainer">
             <Typography variant="h6">Closed Orders</Typography>
-            <TableContainer component={Paper} className="closedOrdersTable">
-              <Table>
-                <TableBody>
-                  {orders.map((order) => (
-                    <React.Fragment key={order.orderNumber}>
-                      <TableRow
-                        onClick={() => setExpandedOrder(order.orderNumber)}
-                      >
-                        <TableCell>Order Number: {order.orderNumber}</TableCell>
-                      </TableRow>
-                      {expandedOrder === order.orderNumber && (
-                        <>
-                          <TableRow>
-                            <TableCell>Order Date</TableCell>
-                            <TableCell>
-                              {new Date(order.orderDate).toLocaleString()}
-                            </TableCell>
-                          </TableRow>
-                          <TableRow>
-                            <TableCell>Status</TableCell>
-                            <TableCell>{order.status}</TableCell>
-                          </TableRow>
-                          <TableRow>
-                            <TableCell>Total Price</TableCell>
-                            <TableCell>
-                              ${calculateTotalPrice(order.items)}
-                            </TableCell>
-                          </TableRow>
-                          <TableRow>
-                            <TableCell>Items Purchased</TableCell>
-                            <TableCell>
-                              <Table>
-                                <TableBody>
-                                  <TableRow>
-                                    {order.items.map((orderItem) => (
-                                      <TableCell key={orderItem.id}>
-                                        <CartItem item={orderItem} />
-                                      </TableCell>
-                                    ))}
-                                  </TableRow>
-                                </TableBody>
-                              </Table>
-                            </TableCell>
-                          </TableRow>
-                        </>
-                      )}
-                    </React.Fragment>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
+            <Paper className="closedOrdersTable">
+              {orders.map((order) => (
+                <React.Fragment key={order.orderNumber}>
+                  <TableRow onClick={() => handleCloseOrder(order.orderNumber)}>
+                    <TableCell>Order Number: {order.orderNumber}</TableCell>
+                  </TableRow>
+                  <Collapse in={expandedOrder === order.orderNumber}>
+                    <Table>
+                      <TableBody>
+                        <TableRow>
+                          <TableCell>Order Date</TableCell>
+                          <TableCell>
+                            {new Date(order.orderDate).toLocaleString()}
+                          </TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell>Status</TableCell>
+                          <TableCell>{order.status}</TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell>Total Price</TableCell>
+                          <TableCell>
+                            ${calculateTotalPrice(order.items)}
+                          </TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell>Items Purchased</TableCell>
+                          <TableCell>
+                            <Paper>
+                              {order.items.map((orderItem) => (
+                                <CartItem
+                                  key={orderItem.id}
+                                  item={orderItem}
+                                  expanded={expandedOrder === order.orderNumber}
+                                  onOrderClick={() =>
+                                    handleOrderClick(order.orderNumber)
+                                  }
+                                />
+                              ))}
+                            </Paper>
+                          </TableCell>
+                        </TableRow>
+                      </TableBody>
+                    </Table>
+                  </Collapse>
+                </React.Fragment>
+              ))}
+            </Paper>
           </div>
         )}
       </div>
