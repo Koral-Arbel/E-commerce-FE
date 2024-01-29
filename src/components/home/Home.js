@@ -11,17 +11,6 @@ import {
 } from "../../services/api";
 import Item from "./Item";
 import UserProfileContext from "../context/UserProfileContext";
-import {
-  Card,
-  CardActionArea,
-  CardMedia,
-  ListItem,
-  ListItemAvatar,
-  Slide,
-  Slider,
-  Unstable_Grid2,
-} from "@mui/material";
-import Grid2 from "@mui/material/Unstable_Grid2/Grid2";
 
 function Home() {
   const { auth } = useContext(AuthContext);
@@ -159,7 +148,9 @@ function Home() {
           <Item
             key={item.id}
             item={item}
-            handleAddItemToCart={() => handlerAddItemToCart(item.id)}
+            handleAddItemToCart={(quantity) =>
+              handlerAddItemToCart(item.id, quantity)
+            }
             handleAddItemToFavorites={() => handleAddItemToFavorites(item.id)}
           />
         ))}

@@ -1,10 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faHeart,
-  faShoppingCart,
-  faTrash,
-} from "@fortawesome/free-solid-svg-icons";
+import { faShoppingCart, faTrash } from "@fortawesome/free-solid-svg-icons";
 import {
   addItemToCart,
   getFavoriteItems,
