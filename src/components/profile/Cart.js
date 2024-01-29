@@ -35,6 +35,8 @@ function Cart() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [expandedOrder, setExpandedOrder] = useState(null);
+  const [lastClosedOrderDetails, setLastClosedOrderDetails] = useState(null);
+  const [lastDisplayedOrder, setLastDisplayedOrder] = useState(null);
 
   useEffect(() => {
     handlerLoadCart();
@@ -86,23 +88,33 @@ function Cart() {
 
           if (orderDetailsData.status === "CLOSE") {
             setCart([]);
+            setLastClosedOrderDetails(orderDetails);
           }
         }
 
         setOrders(
-          closedOrders.map((closedOrder) => ({
-            orderNumber: closedOrder.order.id,
-            orderDate: closedOrder.order.orderDate,
-            status: closedOrder.order.status,
-            items: closedOrder.item.map((orderItem) => ({
-              id: orderItem.id,
-              title: orderItem.title,
-              photo: orderItem.photo,
-              price: orderItem.price,
-              availableStock: orderItem.availableStock,
-              quantity: orderItem.quantity,
-            })),
-          }))
+          closedOrders.map((closedOrder) => {
+            const orderDetails = {
+              orderNumber: closedOrder.order.id,
+              orderDate: closedOrder.order.orderDate,
+              status: closedOrder.order.status,
+              items: closedOrder.item.map((orderItem) => ({
+                id: orderItem.id,
+                title: orderItem.title,
+                photo: orderItem.photo,
+                price: orderItem.price,
+                availableStock: orderItem.availableStock,
+                quantity: orderItem.quantity,
+              })),
+            };
+
+            // אם יש הזמנה סגורה, שמור את הפרטים שלה
+            if (closedOrder.order.status === "CLOSE") {
+              setLastClosedOrderDetails(orderDetails);
+            }
+
+            return orderDetails;
+          })
         );
       }
 
@@ -174,6 +186,44 @@ function Cart() {
     return orderItems.reduce((total, item) => total + (item.price || 0), 0);
   }
 
+  const uniqueClosedOrders = [];
+
+  orders.forEach((order) => {
+    // בדוק האם ההזמנה כבר נמצאת במערך uniqueClosedOrders
+    const existingOrderIndex = uniqueClosedOrders.findIndex(
+      (uniqueOrder) => uniqueOrder.orderNumber === order.orderNumber
+    );
+
+    if (existingOrderIndex === -1) {
+      // ההזמנה עדיין לא נמצאת במערך, הוסף אותה עם רשימת המוצרים
+      uniqueClosedOrders.push({
+        orderNumber: order.orderNumber,
+        orderDate: order.orderDate,
+        status: order.status,
+        items: order.items.map((orderItem) => ({
+          id: orderItem.id,
+          title: orderItem.title,
+          photo: orderItem.photo,
+          price: orderItem.price,
+          availableStock: orderItem.availableStock,
+          quantity: orderItem.quantity,
+        })),
+      });
+    } else {
+      // ההזמנה כבר נמצאת במערך, הוסף את רשימת המוצרים להזמנה הקיימת
+      uniqueClosedOrders[existingOrderIndex].items.push(
+        ...order.items.map((orderItem) => ({
+          id: orderItem.id,
+          title: orderItem.title,
+          photo: orderItem.photo,
+          price: orderItem.price,
+          availableStock: orderItem.availableStock,
+          quantity: orderItem.quantity,
+        }))
+      );
+    }
+  });
+
   return (
     <div>
       <h1>My Cart</h1>
@@ -216,7 +266,7 @@ function Cart() {
           <div className="closedOrdersContainer">
             <Typography variant="h6">Closed Orders</Typography>
             <Paper className="closedOrdersTable">
-              {orders.map((order) => (
+              {uniqueClosedOrders.map((order) => (
                 <Card
                   key={order.orderNumber}
                   onClick={() => handleCloseOrder(order.orderNumber)}
@@ -242,20 +292,34 @@ function Cart() {
                             </TableCell>
                             <TableCell>Items Purchased:</TableCell>
                             <TableCell>
-                              <Paper style={{ display: "flex" }}>
-                                {order.items.map((orderItem) => (
-                                  <CartItem
-                                    key={orderItem.id}
-                                    item={orderItem}
-                                    expanded={
-                                      expandedOrder === order.orderNumber
-                                    }
-                                    onOrderClick={() =>
-                                      handleOrderClick(order.orderNumber)
-                                    }
+                              {order.items.map((orderItem) => (
+                                <div
+                                  key={orderItem.id}
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                  }}
+                                >
+                                  <img
+                                    src={orderItem.photo}
+                                    alt={orderItem.title}
+                                    style={{
+                                      width: "50px",
+                                      height: "50px",
+                                      marginRight: "10px",
+                                    }}
                                   />
-                                ))}
-                              </Paper>
+                                  <div>
+                                    <Typography variant="subtitle1">
+                                      {orderItem.title}
+                                    </Typography>
+                                    <Typography variant="body2">
+                                      Quantity: {orderItem.quantity}, Price: $
+                                      {orderItem.price}
+                                    </Typography>
+                                  </div>
+                                </div>
+                              ))}
                             </TableCell>
                           </TableRow>
                         </TableBody>

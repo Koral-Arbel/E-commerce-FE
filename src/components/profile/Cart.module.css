@@ -25,6 +25,12 @@
   background-color: #f0f0f0;
 }
 
+.cartItem img {
+  /* עיצוב כללי לתמונת המוצר בסל */
+  width: 100%; /* גודל מלא ברוחב */
+  height: auto; /* גובה אוטומטי */
+}
+
 .checkoutButton {
   /* עיצוב כללי לכפתור Checkout */
   margin-top: 10px;
@@ -35,63 +41,34 @@
   margin-top: 20px;
 }
 
-.closedOrders {
-  /* עיצוב כללי לקונטיינר של ההזמנות הסגורות */
+.closedOrdersTable {
+  /* עיצוב כללי לטבלה של ההזמנות הסגורות */
   display: flex;
   flex-direction: column;
-  gap: 10px;
 }
 
-.closedOrder {
-  /* עיצוב כללי להזמנה סגורה */
+.closedOrderCard {
+  /* עיצוב כללי לכרטיסייה של הזמנה סגורה */
   border: 1px solid #ddd;
   padding: 10px;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  display: flex; /* הוספת display כדי שהכרטיסיות יופיעו אחת ליד השנייה בצורה אופקית */
 }
 
-.closedOrder:hover {
+.closedOrderCard:hover {
   /* עיצוב כאשר יש hover על הזמנה סגורה */
   background-color: #f0f0f0;
 }
 
-.closedOrderItems {
-  /* עיצוב כללי לקונטיינר של הפריטים בהזמנה סגורה */
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
+.closedOrderCard img {
+  /* סגנונות לתמונות בהזמנה סגורה */
+  width: 80px; /* רוחב גדול יותר לתמונה */
+  height: 80px; /* גובה גדול יותר לתמונה */
+  transition: transform 0.3s ease-in-out; /* אנימציה של התקררות והתרחבות */
 }
 
-.closedOrderItem {
-  /* עיצוב כללי לפריט בהזמנה סגורה */
-  border: 1px solid #ddd;
-  padding: 10px;
-  width: 200px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.closedOrderItem:hover {
-  /* עיצוב כאשר יש hover על פריט בהזמנה סגורה */
-  background-color: #10d8ce;
-}
-/* Cart.module.css */
-
-.closedOrdersTable {
-  display: flex;
-  flex-direction: column;
-}
-
-.orderDetail {
-  display: flex;
-  justify-content: space-between;
-}
-
-.itemsList {
-  display: flex;
-  flex-direction: row;
-}
-
-.item {
-  margin-right: 8px; /* כדי ליצור מרווח בין פריטים */
+.closedOrderCard:hover img {
+  /* סגנונות נוספים להזמנה סגורה כשיש hover */
+  transform: scale(1.2); /* הגדלת התמונה ב-20% */
 }
