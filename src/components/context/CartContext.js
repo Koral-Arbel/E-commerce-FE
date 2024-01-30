@@ -6,7 +6,6 @@ const CartContext = createContext({});
 export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
 
-  // לדוג, פונקציה להוספת פריט ל-Cart
   const addItemToCart = (item) => {
     setCart((prevCart) => [...prevCart, item]);
   };

@@ -11,17 +11,18 @@ import {
 } from "../../services/api";
 import Item from "./Item";
 import UserProfileContext from "../context/UserProfileContext";
+import ItemsContext from "../context/ItemsContext";
 
 function Home() {
   const { auth } = useContext(AuthContext);
   const { userDetails, setUserDetails } = useContext(UserProfileContext);
+  const { items, setItems } = useContext(ItemsContext);
 
   const [orderDate, setOrderDate] = useState(new Date().toISOString());
   const [shippingAddress, setShippingAddress] = useState("");
   const [status, setStatus] = useState("TEMP");
   const [orderNumber, setOrderNumber] = useState(null);
 
-  const [items, setItems] = useState([]);
   const [favoriteItems, setFavoriteItems] = useState([]);
   const [cart, setCart] = useState([]);
 
@@ -108,7 +109,7 @@ function Home() {
     }
   };
 
-  const handlerAddItemToCart = async (itemId) => {
+  const handlerAddItemToCart = async (itemId, quantity) => {
     try {
       // Check if there is an open order with status "TEMP"
       if (!showItems) {
@@ -121,14 +122,17 @@ function Home() {
         {
           userId: userDetails.id,
           itemId: itemId,
-          quantity: 1,
+          quantity: quantity,
           shippingAddress: userDetails.shippingAddress,
         },
         auth.token
       );
 
       // Update the cart state
-      setCart((prevItems) => [...prevItems, { itemId, shippingAddress }]);
+      setCart((prevItems) => [
+        ...prevItems,
+        { itemId, quantity, shippingAddress: userDetails.shippingAddress },
+      ]);
       console.log("Item added to cart successfully!");
     } catch (error) {
       console.error("Error adding item to cart:", error);

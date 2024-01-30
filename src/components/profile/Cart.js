@@ -6,6 +6,7 @@ import {
   TableBody,
   TableCell,
   Card,
+  Table,
   CardContent,
   TableRow,
   Collapse,
@@ -278,51 +279,53 @@ function Cart() {
                     </Typography>
                     <Collapse in={expandedOrder === order.orderNumber}>
                       <CardActionArea>
-                        <TableBody>
-                          <TableRow>
-                            <TableCell>Order Date:</TableCell>
-                            <TableCell>
-                              {new Date(order.orderDate).toLocaleString()}
-                            </TableCell>
-                            <TableCell>Status:</TableCell>
-                            <TableCell>{order.status}</TableCell>
-                            <TableCell>Total Price:</TableCell>
-                            <TableCell>
-                              ${calculateTotalPrice(order.items)}
-                            </TableCell>
-                            <TableCell>Items Purchased:</TableCell>
-                            <TableCell>
-                              {order.items.map((orderItem) => (
-                                <div
-                                  key={orderItem.id}
-                                  style={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                  }}
-                                >
-                                  <img
-                                    src={orderItem.photo}
-                                    alt={orderItem.title}
+                        <Table>
+                          <TableBody>
+                            <TableRow>
+                              <TableCell>Order Date:</TableCell>
+                              <TableCell>
+                                {new Date(order.orderDate).toLocaleString()}
+                              </TableCell>
+                              <TableCell>Status:</TableCell>
+                              <TableCell>{order.status}</TableCell>
+                              <TableCell>Total Price:</TableCell>
+                              <TableCell>
+                                ${calculateTotalPrice(order.items)}
+                              </TableCell>
+                              <TableCell>Items Purchased:</TableCell>
+                              <TableCell>
+                                {order.items.map((orderItem) => (
+                                  <div
+                                    key={orderItem.id}
                                     style={{
-                                      width: "50px",
-                                      height: "50px",
-                                      marginRight: "10px",
+                                      display: "flex",
+                                      alignItems: "center",
                                     }}
-                                  />
-                                  <div>
-                                    <Typography variant="subtitle1">
-                                      {orderItem.title}
-                                    </Typography>
-                                    <Typography variant="body2">
-                                      Quantity: {orderItem.quantity}, Price: $
-                                      {orderItem.price}
-                                    </Typography>
+                                  >
+                                    <img
+                                      src={orderItem.photo}
+                                      alt={orderItem.title}
+                                      style={{
+                                        width: "50px",
+                                        height: "50px",
+                                        marginRight: "10px",
+                                      }}
+                                    />
+                                    <div>
+                                      <Typography variant="subtitle1">
+                                        {orderItem.title}
+                                      </Typography>
+                                      <Typography variant="body2">
+                                        Quantity: {orderItem.quantity}, Price: $
+                                        {orderItem.price}
+                                      </Typography>
+                                    </div>
                                   </div>
-                                </div>
-                              ))}
-                            </TableCell>
-                          </TableRow>
-                        </TableBody>
+                                ))}
+                              </TableCell>
+                            </TableRow>
+                          </TableBody>
+                        </Table>
                       </CardActionArea>
                     </Collapse>
                   </CardContent>
