@@ -8,16 +8,19 @@ import {
 } from "../../services/api";
 import AuthContext from "../context/AuthProvider";
 import UserProfileContext from "../context/UserProfileContext";
-import { Card, Grid, Button, Typography } from "@mui/material";
+import { Card, Grid, Button, Typography, Snackbar } from "@mui/material";
+import MuiAlert from "@mui/material/Alert";
 
 function FavoriteList() {
   const { auth } = useContext(AuthContext);
+  const { userDetails } = useContext(UserProfileContext);
+
   const [favoriteItems, setFavoriteItems] = useState([]);
   const [cart, setCart] = useState([]);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { userDetails } = useContext(UserProfileContext);
+  const [snackbarMessage, setSnackbarMessage] = useState(null);
 
   useEffect(() => {
     const fetchFavoriteItems = async () => {
@@ -44,23 +47,37 @@ function FavoriteList() {
     fetchFavoriteItems();
   }, [auth?.token, userDetails?.id]);
 
+  const handleSnackbarClose = () => {
+    setSnackbarMessage(null);
+  };
+
   const handlerAddCart = async (itemId) => {
     try {
       if (itemId) {
-        await addItemToCart({ userId: userDetails, itemId }, auth.token);
-        setCart((prevItems) => {
-          // Check if the item is already in the cart
-          if (!prevItems.includes(itemId)) {
-            return [...prevItems, itemId];
-          }
-          return prevItems; // If item is already in cart, return the current state
-        });
+        if (isItemInCart(itemId)) {
+          setSnackbarMessage("The item is already in the shopping cart");
+          return;
+        }
+        const quantity = 1;
+        await addItemToCart(
+          { userId: userDetails.id, itemId, quantity },
+          auth.token
+        );
+        setCart((prevItems) => [...prevItems, itemId]);
+        await handlerRemoveItemFavorite(itemId);
+        setSnackbarMessage(
+          "The item has been successfully added to the shopping cart!"
+        );
       }
     } catch (error) {
-      console.error("Error adding item to cart:", error);
-      setError(error.message || "An error occurred while adding item to cart");
+      console.error("Error adding item to cart. Please try again", error);
+      setError(
+        "The item is already in the shopping cart, Please refresh the page"
+      );
+      setSnackbarMessage("The item is already in the shopping cart");
     }
   };
+
   const handlerRemoveItemFavorite = async (itemId) => {
     try {
       await removeFavoriteItem(itemId, auth.token);
@@ -68,9 +85,10 @@ function FavoriteList() {
         prevItems.filter((item) => item.id !== itemId)
       );
     } catch (error) {
-      console.error("Error deleting item from favorites:", error);
-      setError(
-        error.message || "An error occurred while deleting item from favorites"
+      console.error("Error deleting the item from favorites:", error);
+      setError(error.message || "Error deleting the item from favorites:");
+      setSnackbarMessage(
+        "Error deleting item from favorites. Please try again."
       );
     }
   };
@@ -133,6 +151,22 @@ function FavoriteList() {
           ))}
         </Grid>
       )}
+
+      {/* Snackbar for displaying messages */}
+      <Snackbar
+        open={!!snackbarMessage}
+        autoHideDuration={3000}
+        onClose={handleSnackbarClose}
+      >
+        <MuiAlert
+          elevation={6}
+          variant="filled"
+          severity="info" // or "success", "warning", "error"
+          onClose={handleSnackbarClose}
+        >
+          {snackbarMessage}
+        </MuiAlert>
+      </Snackbar>
     </div>
   );
 }
