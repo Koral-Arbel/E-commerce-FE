@@ -15,7 +15,7 @@ import classes from "./Navbar.module.css";
 import SearchBar from "../SearchBar";
 import AuthContext from "../context/AuthProvider";
 
-function Navbar() {
+function Navbar({ updateResults }) {
   const { auth } = useContext(AuthContext);
   const [isLoggedIn, setLoggedIn] = useState(auth.isLoggedIn);
 
@@ -30,7 +30,7 @@ function Navbar() {
       <Link to="/" className={classes.siteTitle}>
         <FontAwesomeIcon icon={faAppleAlt} /> Original Devices
       </Link>
-      <SearchBar />
+      <SearchBar updateResults={updateResults} />
       <ul>
         {auth.isLoggedIn ? (
           <>

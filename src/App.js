@@ -13,25 +13,33 @@ import UserProfile from "./components/profile/UserProfile";
 import Home from "./components/home/Home";
 import Logout from "./components/registration/Logout";
 import Header from "./components/header/Header";
+import { ItemsProvider } from "./components/context/ItemsContext";
 
 function App() {
   const [errMsg] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+
+  const handleUpdateResults = (results) => {
+    setSearchResults(results);
+  };
 
   return (
     <>
       {errMsg && <p style={{ color: "red" }}>{errMsg}</p>}
 
       <AuthProvider>
-        <Navbar />
+        <Navbar updateResults={handleUpdateResults} />
         <Header />
         <Routes>
           <Route path="/" element={<Home />} />
+
           <Route path="/login" element={<Login />} />
           <Route path="/logout" element={<Logout />} />
           <Route path="/signUp" element={<Register />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/profile" element={<UserProfile />} />
           <Route path="/favorite" element={<FavoriteList />} />
+          <Route path="/items/:id" element={<ItemsProvider />} />
         </Routes>
         <Footer />
       </AuthProvider>
