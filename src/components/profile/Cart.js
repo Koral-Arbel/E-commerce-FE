@@ -17,7 +17,7 @@ import UserProfileContext from "../context/UserProfileContext";
 import OrdersContext from "../context/OrdersContext";
 import CartItem from "./CartItem";
 import { checkOutOrder, getAllOrders } from "../../services/api";
-import "./Cart.module.css";
+import styles from "./Cart.module.css";
 
 function Cart() {
   const { auth } = useContext(AuthContext);
@@ -108,17 +108,13 @@ function Cart() {
                 quantity: orderItem.quantity,
               })),
             };
-
-            // אם יש הזמנה סגורה, שמור את הפרטים שלה
             if (closedOrder.order.status === "CLOSE") {
               setLastClosedOrderDetails(orderDetails);
             }
-
             return orderDetails;
           })
         );
       }
-
       setLoading(false);
     } catch (error) {
       console.error("Error fetching cart details:", error);
@@ -148,15 +144,12 @@ function Cart() {
         orderDetails.status === "TEMP"
       ) {
         await checkOutOrder(orderDetails.orderNumber, {}, auth.token);
-
         const orderItems = orderDetails.items;
-
         setCart((prevCart) =>
           prevCart.filter((cartItem) =>
             orderItems.every((orderItem) => orderItem.id !== cartItem.id)
           )
         );
-
         setOrders((prevOrders) => [
           {
             orderNumber: orderDetails.orderNumber,
@@ -166,7 +159,6 @@ function Cart() {
           },
           ...prevOrders,
         ]);
-
         setOrderDetails({
           userId: userDetails,
           orderDate: orderDetails.Date.toLocaleString,
@@ -175,7 +167,6 @@ function Cart() {
           orderNumber: "NEW",
           items: [],
         });
-
         handlerLoadCart();
       }
     } catch (error) {
@@ -188,15 +179,11 @@ function Cart() {
   }
 
   const uniqueClosedOrders = [];
-
   orders.forEach((order) => {
-    // בדוק האם ההזמנה כבר נמצאת במערך uniqueClosedOrders
     const existingOrderIndex = uniqueClosedOrders.findIndex(
       (uniqueOrder) => uniqueOrder.orderNumber === order.orderNumber
     );
-
     if (existingOrderIndex === -1) {
-      // ההזמנה עדיין לא נמצאת במערך, הוסף אותה עם רשימת המוצרים
       uniqueClosedOrders.push({
         orderNumber: order.orderNumber,
         orderDate: order.orderDate,
@@ -211,7 +198,6 @@ function Cart() {
         })),
       });
     } else {
-      // ההזמנה כבר נמצאת במערך, הוסף את רשימת המוצרים להזמנה הקיימת
       uniqueClosedOrders[existingOrderIndex].items.push(
         ...order.items.map((orderItem) => ({
           id: orderItem.id,
@@ -237,7 +223,7 @@ function Cart() {
           <>
             <Typography variant="h6">Items in Cart</Typography>
             {cart.length > 0 ? (
-              <Paper>
+              <Paper className={styles.cartPaper}>
                 {cart.map((item) => (
                   <CartItem
                     key={item.id}
@@ -255,7 +241,7 @@ function Cart() {
             <Button
               variant="contained"
               color="primary"
-              className="checkoutButton"
+              className={styles.checkoutButton}
               onClick={handlerCheckout}
             >
               Checkout
@@ -264,17 +250,20 @@ function Cart() {
         )}
 
         {orders.length > 0 && (
-          <div className="closedOrdersContainer">
+          <div className={styles.closedOrdersContainer}>
             <Typography variant="h6">Closed Orders</Typography>
-            <Paper className="closedOrdersTable">
+            <Paper className={styles.closedOrdersTable}>
               {uniqueClosedOrders.map((order) => (
                 <Card
                   key={order.orderNumber}
                   onClick={() => handleCloseOrder(order.orderNumber)}
-                  className="closedOrderCard"
+                  className={styles.closedOrderCard}
                 >
-                  <CardContent>
-                    <Typography variant="subtitle1">
+                  <CardContent className={styles.closedOrderCardContent}>
+                    <Typography
+                      variant="subtitle1"
+                      className={styles.orderNumber}
+                    >
                       Order Number: {order.orderNumber}
                     </Typography>
                     <Collapse in={expandedOrder === order.orderNumber}>

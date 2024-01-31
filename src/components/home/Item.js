@@ -8,9 +8,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 function Item({ item, handleAddItemToCart, handleAddItemToFavorites }) {
   const [quantity, setQuantity] = useState(1);
+  const [isSelected, setIsSelected] = useState(false);
 
   const handleQuantityChange = (event) => {
     setQuantity(Number(event.target.value));
+  };
+  const handleSelectItem = () => {
+    setIsSelected(!isSelected);
   };
 
   return (
@@ -50,10 +54,14 @@ function Item({ item, handleAddItemToCart, handleAddItemToFavorites }) {
           </Button>
 
           <Button
-            onClick={() => handleAddItemToFavorites(item.id)}
+            onClick={() => {
+              handleAddItemToFavorites(item.id);
+              handleSelectItem();
+            }}
             variant="outlined"
             color="secondary"
             startIcon={<FontAwesomeIcon icon={faHeart} />}
+            className={isSelected ? styles.selected : ""}
           >
             Add to Favorites
           </Button>

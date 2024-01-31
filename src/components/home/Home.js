@@ -75,7 +75,6 @@ function Home() {
       await addFavoriteItem({ userId: userDetails.id, itemId }, auth.token);
       setFavoriteItems((prevItems) => [...prevItems, itemId]);
 
-      // Re-run checkOpenOrder after adding item to favorites
       checkOpenOrder();
     } catch (error) {
       console.log("Adding item to favorites:", itemId);
@@ -100,9 +99,6 @@ function Home() {
       const newOrderNumber = response.data.orderNumber;
       setOrderNumber(newOrderNumber);
 
-      // Perform additional actions after creating the order
-
-      // After creating the order, check again if there is an open order
       checkOpenOrder();
     } catch (error) {
       console.error("Error in create new order", error);
@@ -116,8 +112,6 @@ function Home() {
         // If no open order, create a new order
         await handleCreateOrder();
       }
-
-      // Add item to cart
       await addItemToCart(
         {
           userId: userDetails.id,
@@ -128,7 +122,6 @@ function Home() {
         auth.token
       );
 
-      // Update the cart state
       setCart((prevItems) => [
         ...prevItems,
         { itemId, quantity, shippingAddress: userDetails.shippingAddress },

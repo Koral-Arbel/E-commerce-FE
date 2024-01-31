@@ -62,3 +62,8 @@
   font-weight: bold;
   font-size: 1.7rem;
 }
+.selected {
+  background-color: rgb(255, 0, 0); /* כל סגנון שאת רוצה כשהפריט נבחר */
+  color: rgb(9, 104, 156);
+  border: 1px solid darkblue;
+}
