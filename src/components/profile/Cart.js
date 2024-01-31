@@ -174,8 +174,12 @@ function Cart() {
     }
   };
 
-  function calculateTotalPrice(orderItems) {
-    return orderItems.reduce((total, item) => total + (item.price || 0), 0);
+  function calculateTotalPrice(cartItems) {
+    return cartItems.reduce((total, cartItem) => {
+      const itemPrice = cartItem.price || 0;
+      const itemQuantity = cartItem.quantity || 1;
+      return total + itemPrice * itemQuantity;
+    }, 0);
   }
 
   const uniqueClosedOrders = [];

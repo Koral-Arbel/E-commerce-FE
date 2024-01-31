@@ -107,9 +107,7 @@ function Home() {
 
   const handlerAddItemToCart = async (itemId, quantity) => {
     try {
-      // Check if there is an open order with status "TEMP"
       if (!showItems) {
-        // If no open order, create a new order
         await handleCreateOrder();
       }
       await addItemToCart(
@@ -145,7 +143,7 @@ function Home() {
           <Item
             key={item.id}
             item={item}
-            handleAddItemToCart={(quantity) =>
+            handleAddItemToCart={(itemId, quantity) =>
               handlerAddItemToCart(item.id, quantity)
             }
             handleAddItemToFavorites={() => handleAddItemToFavorites(item.id)}
