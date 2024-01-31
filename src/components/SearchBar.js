@@ -20,37 +20,28 @@ function SearchBar({ updateResults }) {
   const [selectedItem, setSelectedItem] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const debounce = (fn, delay) => {
-    let timerId;
-    return function (...args) {
-      if (timerId) {
-        clearTimeout(timerId);
-      }
-      timerId = setTimeout(() => {
-        fn(...args);
-      }, delay);
-    };
-  };
-
-  const debouncedSearch = debounce(async () => {
-    try {
-      const results = await searchTerm(searchItems);
-      setSearchResults(results);
-      updateResults(results);
-    } catch (error) {
-      console.error("Error handling search:", error);
-      setSearchResults([]);
-    }
-  }, 300);
-
   useEffect(() => {
-    if (searchItems.trim() !== "") {
-      debouncedSearch();
-    } else {
-      setSearchResults([]);
-      updateResults([]);
-    }
-  }, [searchItems, debouncedSearch, updateResults]);
+    const fetchData = async () => {
+      try {
+        const results = await searchTerm(searchItems);
+        setSearchResults(results);
+        updateResults(results);
+      } catch (error) {
+        console.error("Error handling search:", error);
+        setSearchResults([]);
+      }
+    };
+
+    // Fetch data only if the user has stopped typing for 300 milliseconds
+    const timeoutId = setTimeout(() => {
+      if (searchItems.trim() !== "") {
+        fetchData();
+      }
+    }, 300);
+
+    // Cleanup the timeout on every keystroke
+    return () => clearTimeout(timeoutId);
+  }, [searchItems, updateResults]);
 
   const handleInputChange = (event) => {
     setSearchItems(event.target.value);
@@ -58,10 +49,8 @@ function SearchBar({ updateResults }) {
 
   const handleOpenModal = (item) => {
     setSelectedItem(item);
-    setSearchItems("");
     setIsModalOpen(true);
   };
-
   const handleCloseModal = () => {
     setSelectedItem(null);
     setSearchItems("");

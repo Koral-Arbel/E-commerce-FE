@@ -39,7 +39,6 @@ function App() {
           <Route path="/cart" element={<Cart />} />
           <Route path="/profile" element={<UserProfile />} />
           <Route path="/favorite" element={<FavoriteList />} />
-          <Route path="/items/:id" element={<ItemsProvider />} />
         </Routes>
         <Footer />
       </AuthProvider>
