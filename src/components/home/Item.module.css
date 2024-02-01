@@ -1,3 +1,5 @@
+/* Item.module.css */
+
 .item-container {
   padding: 15px;
   margin: 10px;
@@ -10,21 +12,26 @@
 
 .item-container:hover {
   transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* יוסיף יופי לכשהעכבר נמצא מעל הפריט */
 }
 
 .item-title {
   font-weight: bold;
   font-size: 1.7rem;
+  color: #333; /* צבע טקסט כותרת */
 }
 
 .item-image {
   width: 100%;
   height: auto;
+  border-radius: 8px; /* רינדור לפינות התמונה */
+  margin-top: 10px;
 }
 
 .item-price {
   color: green;
   font-weight: bold;
+  margin-top: 10px;
 }
 
 .quantity-container {
@@ -42,6 +49,9 @@
   width: 50px;
   margin-right: 10px;
   font-size: 16px;
+  padding: 5px;
+  border: 1px solid #ccc; /* גבולות תיבת הקלט */
+  border-radius: 4px; /* רינדור לפינות תיבת הקלט */
 }
 
 .button-container {
@@ -52,6 +62,10 @@
 
 .button-container button {
   margin: 5px;
+  font-size: 16px;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: transform 0.2s;
 }
 
 .button-container button:hover {
@@ -61,9 +75,12 @@
 .span {
   font-weight: bold;
   font-size: 1.7rem;
+  color: #333; /* צבע טקסט כותרת נוספת */
 }
-.selected {
-  background-color: rgb(255, 0, 0); /* כל סגנון שאת רוצה כשהפריט נבחר */
-  color: rgb(9, 104, 156);
-  border: 1px solid darkblue;
+
+.disabledButton {
+  background-color: #ccc; /* רקע אפור כשהכפתור מושבת */
+  color: #666; /* צבע טקסט כשהכפתור מושבת */
+  cursor: not-allowed; /* סגנון עכבר מוגדר כלא אפשר ללחוץ */
+  border: 1px solid #ccc; /* גבולות הכפתור כשהוא מושבת */
 }

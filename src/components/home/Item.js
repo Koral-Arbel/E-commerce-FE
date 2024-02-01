@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Paper from "@mui/material/Paper";
 import Button from "@mui/material/Button";
 import { Grid } from "@mui/material";
@@ -8,14 +8,35 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 function Item({ item, handleAddItemToCart, handleAddItemToFavorites }) {
   const [quantity, setQuantity] = useState(1);
-  const [isSelected, setIsSelected] = useState(false);
+  const [isInCart, setIsInCart] = useState(false);
+  const [isInFavorites, setIsInFavorites] = useState(false);
 
   const handleQuantityChange = (event) => {
     setQuantity(Number(event.target.value));
   };
-  const handleSelectItem = () => {
-    setIsSelected(!isSelected);
+
+  const handleAddToCart = () => {
+    if (!isInCart) {
+      handleAddItemToCart(item.id, quantity);
+      setIsInCart(true);
+    }
   };
+
+  const handleAddToFavorites = () => {
+    handleAddItemToFavorites(item.id);
+    setIsInFavorites(true);
+  };
+
+  useEffect(() => {
+    // בדיקה האם הפריט בסל
+    const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+    setIsInCart(cartItems.some((cartItem) => cartItem.id === item.id));
+
+    // בדיקה האם הפריט במועדפים
+    const favoritesItems =
+      JSON.parse(localStorage.getItem("favoritesItems")) || [];
+    setIsInFavorites(favoritesItems.some((favItem) => favItem.id === item.id));
+  }, [item.id]);
 
   return (
     <Grid item xs={12} sm={6} md={4}>
@@ -45,23 +66,21 @@ function Item({ item, handleAddItemToCart, handleAddItemToFavorites }) {
           </div>
 
           <Button
-            onClick={() => handleAddItemToCart(item.id, quantity)}
+            onClick={handleAddToCart}
             variant="contained"
             color="primary"
             startIcon={<FontAwesomeIcon icon={faShoppingCart} />}
+            className={isInCart ? styles.disabledButton : ""}
           >
             Add to Cart
           </Button>
 
           <Button
-            onClick={() => {
-              handleAddItemToFavorites(item.id);
-              handleSelectItem();
-            }}
+            onClick={handleAddToFavorites}
             variant="outlined"
             color="secondary"
             startIcon={<FontAwesomeIcon icon={faHeart} />}
-            className={isSelected ? styles.selected : ""}
+            className={isInFavorites ? styles.disabledButton : ""}
           >
             Add to Favorites
           </Button>
