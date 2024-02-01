@@ -2,6 +2,7 @@ import { axiosInstance as axios } from "./axiosInstance";
 
 const SEARCH_TERM = (title) => `/item/searchItems?title=${title}`;
 const CREATE_NEW_USER = () => `/api/public/user/create`;
+const UPDATE_USER = (userId) => `/api/public/user/update/${userId}/`;
 const GET_USER_PROFILE = (username) => `/api/public/user/findUser/${username}`;
 const GET_USER_BY_ID = (userId) => `/api/public/user/getUser/${userId}`;
 const DELETE_USER = (userId) => `/api/public/user/deleteUser/${userId}`;
@@ -26,12 +27,10 @@ export const searchTerm = async (title) => {
   try {
     const response = await axios.get(SEARCH_TERM(title));
     console.log("Search results:", response.data);
-    // כאן תעשה משהו עם תוצאות החיפוש
     return response.data;
   } catch (error) {
-    // כאן תטפל בשגיאה
     console.error("Error handling search:", error);
-    return []; // או ערך אחר שתרצה להחזיר במקרה של שגיאה
+    return [];
   }
 };
 
@@ -47,6 +46,18 @@ export const getProfileUser = async (username) => {
     console.error("Error fetching user profile: ", error);
     throw error;
   }
+};
+
+export const updateProfileUser = (userId, jwt, updatedDetails) => {
+  const url = UPDATE_USER(userId);
+  return axios.put(url, updatedDetails, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+    params: {
+      Authorization: `Bearer ${jwt}`,
+    },
+  });
 };
 
 export const getUserById = (userId, jwt) =>

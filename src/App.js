@@ -13,7 +13,6 @@ import UserProfile from "./components/profile/UserProfile";
 import Home from "./components/home/Home";
 import Logout from "./components/registration/Logout";
 import Header from "./components/header/Header";
-import { ItemsProvider } from "./components/context/ItemsContext";
 
 function App() {
   const [errMsg] = useState("");
