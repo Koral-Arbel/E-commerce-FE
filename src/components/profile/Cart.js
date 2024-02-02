@@ -16,8 +16,13 @@ import AuthContext from "../context/AuthProvider";
 import UserProfileContext from "../context/UserProfileContext";
 import OrdersContext from "../context/OrdersContext";
 import CartItem from "./CartItem";
-import { checkOutOrder, getAllOrders } from "../../services/api";
+import {
+  checkOutOrder,
+  deleteOrderItem,
+  getAllOrders,
+} from "../../services/api";
 import styles from "./Cart.module.css";
+import Fade from "@mui/material/Fade";
 
 function Cart() {
   const { auth } = useContext(AuthContext);
@@ -36,8 +41,7 @@ function Cart() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [expandedOrder, setExpandedOrder] = useState(null);
-  const [lastClosedOrderDetails, setLastClosedOrderDetails] = useState(null);
-  const [lastDisplayedOrder, setLastDisplayedOrder] = useState(null);
+  const [setLastClosedOrderDetails] = useState(null);
 
   useEffect(() => {
     handlerLoadCart();
@@ -135,6 +139,21 @@ function Cart() {
     );
   };
 
+  const handleUpdateQuantity = (itemId, newQuantity) => {
+    const updatedCart = cart.map((item) =>
+      item.id === itemId ? { ...item, quantity: newQuantity } : item
+    );
+    setCart(updatedCart);
+
+    const updatedOrderDetails = {
+      ...orderDetails,
+      items: orderDetails.items.map((item) =>
+        item.id === itemId ? { ...item, quantity: newQuantity } : item
+      ),
+    };
+    setOrderDetails(updatedOrderDetails);
+  };
+
   const handlerCheckout = async () => {
     try {
       if (
@@ -214,42 +233,92 @@ function Cart() {
       );
     }
   });
+  const handleDeleteCartItem = async (itemId) => {
+    try {
+      await deleteOrderItem(itemId, auth.token);
+      const updatedCart = cart.filter((cartItem) => cartItem.id !== itemId);
+      setCart(updatedCart);
+      if (updatedCart.length === 0) {
+        setOrderDetails({
+          userId: userDetails,
+          orderDate: orderDetails.Date.toLocaleString,
+          shippingAddress: "",
+          status: "TEMP",
+          orderNumber: "NEW",
+          items: [],
+        });
+      }
+      handlerLoadCart();
+    } catch (error) {
+      console.error("Error deleting cart item:", error);
+    }
+  };
 
   return (
     <div>
       <h1>My Cart</h1>
 
       {loading && <p>Loading...</p>}
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && (
+        <p style={{ color: "red" }}>
+          {error}
+          <Button onClick={clearError} style={{ marginLeft: "10px" }}>
+            Dismiss
+          </Button>
+        </p>
+      )}
 
       <div id="cartContainer">
         {orderDetails.status === "TEMP" && (
           <>
             <Typography variant="h6">Items in Cart</Typography>
             {cart.length > 0 ? (
-              <Paper className={styles.cartPaper}>
+              <div className={styles.tempOrderContainer}>
                 {cart.map((item) => (
-                  <CartItem
+                  <div
                     key={item.id}
-                    item={item}
-                    expanded={expandedOrder === orderDetails.orderNumber}
-                    onOrderClick={() =>
-                      handleOrderClick(orderDetails.orderNumber)
-                    }
-                  />
+                    className={styles.tempOrderItem}
+                    onClick={() => handleOrderClick(orderDetails.orderNumber)}
+                  >
+                    <img src={item.photo} alt={item.title} />
+                    <Typography variant="subtitle1">{item.title}</Typography>
+                    <Typography variant="body2">
+                      Price: ${item.price}, availableStock:{" "}
+                      {item.availableStock}
+                    </Typography>
+                    <label>
+                      Quantity:{" "}
+                      <input
+                        type="number"
+                        value={item.quantity}
+                        onChange={(e) =>
+                          handleUpdateQuantity(item.id, e.target.value)
+                        }
+                      />
+                    </label>
+                    <Button
+                      variant="outlined"
+                      color="secondary"
+                      onClick={() => handleDeleteCartItem(item.id)}
+                    >
+                      Delete
+                    </Button>
+                  </div>
                 ))}
-              </Paper>
+              </div>
             ) : (
               <Typography variant="body2">Your cart is empty.</Typography>
             )}
-            <Button
-              variant="contained"
-              color="primary"
-              className={styles.checkoutButton}
-              onClick={handlerCheckout}
-            >
-              Checkout
-            </Button>
+            <Fade in={cart.length > 0}>
+              <Button
+                variant="contained"
+                color="primary"
+                className={styles.checkoutButton}
+                onClick={handlerCheckout}
+              >
+                Checkout
+              </Button>
+            </Fade>
           </>
         )}
 

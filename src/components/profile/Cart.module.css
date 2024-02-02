@@ -27,6 +27,16 @@
 
 .checkoutButton {
   margin-top: 10px;
+  background-color: #4caf50;
+  color: white;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.checkoutButton:hover {
+  transform: scale(1.1);
 }
 
 .closedOrdersContainer {
@@ -65,4 +75,45 @@
   width: 100%;
   padding: 20px;
   margin-top: 20px;
+}
+.tempOrderContainer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.tempOrderItem {
+  border: 1px solid #ddd;
+  padding: 10px;
+  margin: 10px;
+  width: 200px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.tempOrderItem:hover {
+  background-color: #181818;
+}
+
+.tempOrderItem img {
+  width: 100%;
+  height: auto;
+  margin-bottom: 10px;
+}
+
+.checkoutButton {
+  margin-top: 20px;
+  background-color: #4caf50;
+  color: white;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.checkoutButton:hover {
+  transform: scale(1.1);
 }
