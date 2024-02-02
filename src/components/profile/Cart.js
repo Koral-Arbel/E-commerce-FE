@@ -3,26 +3,26 @@ import {
   Button,
   Typography,
   Paper,
-  TableBody,
-  TableCell,
   Card,
-  Table,
   CardContent,
-  TableRow,
   Collapse,
   CardActionArea,
+  Table,
+  TableBody,
+  TableRow,
+  TableCell,
+  Fade,
 } from "@mui/material";
 import AuthContext from "../context/AuthProvider";
 import UserProfileContext from "../context/UserProfileContext";
 import OrdersContext from "../context/OrdersContext";
+import CartItem from "./CartItem";
 import {
   checkOutOrder,
   deleteOrderItem,
   getAllOrders,
 } from "../../services/api";
 import styles from "./Cart.module.css";
-import Fade from "@mui/material/Fade";
-import CartItem from "./CartItem";
 
 function Cart() {
   const { auth } = useContext(AuthContext);
@@ -41,11 +41,11 @@ function Cart() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [expandedOrder, setExpandedOrder] = useState(null);
-  const [setLastClosedOrderDetails] = useState(null);
+  const [hovered, setHovered] = useState(false);
 
   useEffect(() => {
     handlerLoadCart();
-  }, [auth.token, userDetails, setCart]);
+  }, [auth.token, userDetails, setCart, setOrderDetails]);
 
   const clearError = () => {
     setError(null);
@@ -93,36 +93,30 @@ function Cart() {
 
           if (orderDetailsData.status === "CLOSE") {
             setCart([]);
-            setLastClosedOrderDetails(orderDetails);
           }
         }
 
         setOrders(
-          closedOrders.map((closedOrder) => {
-            const orderDetails = {
-              orderNumber: closedOrder.order.id,
-              orderDate: closedOrder.order.orderDate,
-              status: closedOrder.order.status,
-              items: closedOrder.item.map((orderItem) => ({
-                id: orderItem.id,
-                title: orderItem.title,
-                photo: orderItem.photo,
-                price: orderItem.price,
-                availableStock: orderItem.availableStock,
-                quantity: orderItem.quantity,
-              })),
-            };
-            if (closedOrder.order.status === "CLOSE") {
-              setLastClosedOrderDetails(orderDetails);
-            }
-            return orderDetails;
-          })
+          closedOrders.map((closedOrder) => ({
+            orderNumber: closedOrder.order.id,
+            orderDate: closedOrder.order.orderDate,
+            status: closedOrder.order.status,
+            items: closedOrder.item.map((orderItem) => ({
+              id: orderItem.id,
+              title: orderItem.title,
+              photo: orderItem.photo,
+              price: orderItem.price,
+              availableStock: orderItem.availableStock,
+              quantity: orderItem.quantity,
+            })),
+          }))
         );
       }
+
       setLoading(false);
     } catch (error) {
       console.error("Error fetching cart details:", error);
-      setError();
+      setError("Error fetching cart details. Please try again later.");
       setLoading(false);
     }
   };
@@ -233,6 +227,7 @@ function Cart() {
       );
     }
   });
+
   const handleDeleteCartItem = async (itemId) => {
     try {
       await deleteOrderItem(itemId, auth.token);
@@ -278,6 +273,7 @@ function Cart() {
                   <CartItem
                     key={item.id}
                     item={item}
+                    orderDetails={orderDetails}
                     handleOrderClick={handleOrderClick}
                     handleUpdateQuantity={handleUpdateQuantity}
                     handleDeleteCartItem={handleDeleteCartItem}
@@ -291,7 +287,11 @@ function Cart() {
               <Button
                 variant="contained"
                 color="primary"
-                className={styles.checkoutButton}
+                className={`${styles.checkoutButton} ${
+                  hovered && styles.checkoutButtonHover
+                }`}
+                onMouseOver={() => setHovered(true)}
+                onMouseOut={() => setHovered(false)}
                 onClick={handlerCheckout}
               >
                 Checkout

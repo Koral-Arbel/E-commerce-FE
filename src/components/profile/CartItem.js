@@ -1,16 +1,19 @@
 import React from "react";
-import { Button, Typography } from "@mui/material";
+import { Typography, Button } from "@mui/material";
 import styles from "./Cart.module.css";
 
-function CartItem(props) {
-  const { item, handleOrderClick, handleUpdateQuantity, handleDeleteCartItem } =
-    props;
-
+function CartItem({
+  item,
+  orderDetails,
+  handleOrderClick,
+  handleUpdateQuantity,
+  handleDeleteCartItem,
+}) {
   return (
     <div
       key={item.id}
       className={styles.tempOrderItem}
-      onClick={() => handleOrderClick(item.orderNumber)}
+      onClick={() => handleOrderClick(orderDetails.orderNumber)}
     >
       <img src={item.photo} alt={item.title} />
       <Typography variant="subtitle1">{item.title}</Typography>
