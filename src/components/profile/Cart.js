@@ -15,7 +15,6 @@ import {
 import AuthContext from "../context/AuthProvider";
 import UserProfileContext from "../context/UserProfileContext";
 import OrdersContext from "../context/OrdersContext";
-import CartItem from "./CartItem";
 import {
   checkOutOrder,
   deleteOrderItem,
@@ -23,6 +22,7 @@ import {
 } from "../../services/api";
 import styles from "./Cart.module.css";
 import Fade from "@mui/material/Fade";
+import CartItem from "./CartItem";
 
 function Cart() {
   const { auth } = useContext(AuthContext);
@@ -122,7 +122,7 @@ function Cart() {
       setLoading(false);
     } catch (error) {
       console.error("Error fetching cart details:", error);
-      setError("Error fetching cart details. Please try again later.");
+      setError();
       setLoading(false);
     }
   };
@@ -275,35 +275,13 @@ function Cart() {
             {cart.length > 0 ? (
               <div className={styles.tempOrderContainer}>
                 {cart.map((item) => (
-                  <div
+                  <CartItem
                     key={item.id}
-                    className={styles.tempOrderItem}
-                    onClick={() => handleOrderClick(orderDetails.orderNumber)}
-                  >
-                    <img src={item.photo} alt={item.title} />
-                    <Typography variant="subtitle1">{item.title}</Typography>
-                    <Typography variant="body2">
-                      Price: ${item.price}, availableStock:{" "}
-                      {item.availableStock}
-                    </Typography>
-                    <label>
-                      Quantity:{" "}
-                      <input
-                        type="number"
-                        value={item.quantity}
-                        onChange={(e) =>
-                          handleUpdateQuantity(item.id, e.target.value)
-                        }
-                      />
-                    </label>
-                    <Button
-                      variant="outlined"
-                      color="secondary"
-                      onClick={() => handleDeleteCartItem(item.id)}
-                    >
-                      Delete
-                    </Button>
-                  </div>
+                    item={item}
+                    handleOrderClick={handleOrderClick}
+                    handleUpdateQuantity={handleUpdateQuantity}
+                    handleDeleteCartItem={handleDeleteCartItem}
+                  />
                 ))}
               </div>
             ) : (

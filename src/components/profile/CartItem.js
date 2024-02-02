@@ -1,32 +1,37 @@
-// CartItem.js
-import React, { useState } from "react";
-import "./Cart.module.css";
+import React from "react";
+import { Button, Typography } from "@mui/material";
+import styles from "./Cart.module.css";
 
-function CartItem({ item, onUpdateQuantity }) {
-  const [updatedQuantity, setUpdatedQuantity] = useState(item.quantity);
-
-  const handleQuantityChange = (event) => {
-    const newQuantity = parseInt(event.target.value, 10);
-    setUpdatedQuantity(newQuantity);
-    onUpdateQuantity(item.id, newQuantity);
-  };
+function CartItem(props) {
+  const { item, handleOrderClick, handleUpdateQuantity, handleDeleteCartItem } =
+    props;
 
   return (
-    <div className="cartItem" key={item.id}>
-      <img src={item.photo} alt={item.title} className="itemImage" />
-      <div className="itemDetails">
-        <h3 className="itemTitle">{item.title}</h3>
-        <p className="itemPrice">Price: ${item.price}</p>
-        <p className="availableStock">Available Stock: {item.availableStock}</p>
-        <label>
-          Quantity:{" "}
-          <input
-            type="number"
-            value={updatedQuantity}
-            onChange={handleQuantityChange}
-          />
-        </label>
-      </div>
+    <div
+      key={item.id}
+      className={styles.tempOrderItem}
+      onClick={() => handleOrderClick(item.orderNumber)}
+    >
+      <img src={item.photo} alt={item.title} />
+      <Typography variant="subtitle1">{item.title}</Typography>
+      <Typography variant="body2">
+        Price: ${item.price}, availableStock: {item.availableStock}
+      </Typography>
+      <label>
+        Quantity:{" "}
+        <input
+          type="number"
+          value={item.quantity}
+          onChange={(e) => handleUpdateQuantity(item.id, e.target.value)}
+        />
+      </label>
+      <Button
+        variant="outlined"
+        color="secondary"
+        onClick={() => handleDeleteCartItem(item.id)}
+      >
+        Delete
+      </Button>
     </div>
   );
 }
