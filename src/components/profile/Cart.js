@@ -45,7 +45,7 @@ function Cart() {
 
   useEffect(() => {
     handlerLoadCart();
-  }, [auth.token, userDetails, setCart]);
+  }, [auth.token, userDetails, setCart, setOrderDetails]);
 
   const clearError = () => {
     setError(null);
@@ -97,24 +97,22 @@ function Cart() {
         }
 
         setOrders(
-          closedOrders.map((closedOrder) => {
-            const orderDetails = {
-              orderNumber: closedOrder.order.id,
-              orderDate: closedOrder.order.orderDate,
-              status: closedOrder.order.status,
-              items: closedOrder.item.map((orderItem) => ({
-                id: orderItem.id,
-                title: orderItem.title,
-                photo: orderItem.photo,
-                price: orderItem.price,
-                availableStock: orderItem.availableStock,
-                quantity: orderItem.quantity,
-              })),
-            };
-            return orderDetails;
-          })
+          closedOrders.map((closedOrder) => ({
+            orderNumber: closedOrder.order.id,
+            orderDate: closedOrder.order.orderDate,
+            status: closedOrder.order.status,
+            items: closedOrder.item.map((orderItem) => ({
+              id: orderItem.id,
+              title: orderItem.title,
+              photo: orderItem.photo,
+              price: orderItem.price,
+              availableStock: orderItem.availableStock,
+              quantity: orderItem.quantity,
+            })),
+          }))
         );
       }
+
       setLoading(false);
     } catch (error) {
       console.error("Error fetching cart details:", error);
@@ -136,22 +134,18 @@ function Cart() {
   };
 
   const handleUpdateQuantity = (itemId, newQuantity) => {
-    setCart((prevCart) => {
-      const updatedCart = prevCart.map((item) =>
+    const updatedCart = cart.map((item) =>
+      item.id === itemId ? { ...item, quantity: newQuantity } : item
+    );
+    setCart(updatedCart);
+
+    const updatedOrderDetails = {
+      ...orderDetails,
+      items: orderDetails.items.map((item) =>
         item.id === itemId ? { ...item, quantity: newQuantity } : item
-      );
-
-      const updatedOrderDetails = {
-        ...orderDetails,
-        items: orderDetails.items.map((item) =>
-          item.id === itemId ? { ...item, quantity: newQuantity } : item
-        ),
-      };
-
-      setOrderDetails(updatedOrderDetails);
-
-      return updatedCart;
-    });
+      ),
+    };
+    setOrderDetails(updatedOrderDetails);
   };
 
   const handlerCheckout = async () => {

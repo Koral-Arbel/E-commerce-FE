@@ -17,11 +17,8 @@ function Item({ item, handleAddItemToCart, handleAddItemToFavorites }) {
 
   const handleAddToCart = () => {
     if (!isInCart) {
-      const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
-      if (!cartItems.some((cartItem) => cartItem.id === item.id)) {
-        handleAddItemToCart(item.id, quantity);
-        setIsInCart(true);
-      }
+      handleAddItemToCart(item.id, quantity);
+      setIsInCart(true);
     }
   };
 
@@ -30,18 +27,22 @@ function Item({ item, handleAddItemToCart, handleAddItemToFavorites }) {
     setIsInFavorites(true);
   };
 
-  const getDataFromLocalStorage = () => {
-    const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
-    setIsInCart(cartItems.some((cartItem) => cartItem.id === item.id));
-
-    const favoritesItems =
-      JSON.parse(localStorage.getItem("favoritesItems")) || [];
-    setIsInFavorites(favoritesItems.some((favItem) => favItem.id === item.id));
-  };
-
   useEffect(() => {
-    // הקראה לפונקציה ברגע שהקומפוננטה נטענת
-    getDataFromLocalStorage();
+    // נבדוק בכל פעם שמתבצע שינוי ב- item.id
+    // ונעדכן את הסטייטים בהתאם למצב הנוכחי
+    const checkItemStatus = () => {
+      const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+      setIsInCart(cartItems.some((cartItem) => cartItem.id === item.id));
+
+      const favoritesItems =
+        JSON.parse(localStorage.getItem("favoritesItems")) || [];
+      setIsInFavorites(
+        favoritesItems.some((favItem) => favItem.id === item.id)
+      );
+    };
+
+    // ברגע שהקומפוננטה נטענת, נבדוק את המצב הנוכחי
+    checkItemStatus();
   }, [item.id]);
 
   return (

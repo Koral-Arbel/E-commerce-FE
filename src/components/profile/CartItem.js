@@ -18,16 +18,16 @@ function CartItem({
       <img src={item.photo} alt={item.title} />
       <Typography variant="subtitle1">{item.title}</Typography>
       <Typography variant="body2">
-        Price: ${item.price}, availableStock: {item.availableStock}
+        Price: ${item.price}, AvailableStock: {item.availableStock}
       </Typography>
       <label>
-        Quantity:{" "}
         <input
           type="number"
           value={item.quantity}
           min="1"
           max={item.availableStock}
           onChange={(e) => handleUpdateQuantity(item.id, e.target.value)}
+          readOnly
         />
       </label>
       <Button
