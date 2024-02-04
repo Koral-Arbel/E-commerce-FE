@@ -16,7 +16,7 @@ import Header from "./components/header/Header";
 
 function App() {
   const [errMsg] = useState("");
-  const [setSearchResults] = useState([]);
+  const [searchResults, setSearchResults] = useState([]);
 
   const handleUpdateResults = (results) => {
     setSearchResults(results);
