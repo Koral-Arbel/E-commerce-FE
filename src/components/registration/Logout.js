@@ -8,7 +8,6 @@ function Logout() {
   const { setAuth } = useContext(AuthContext);
 
   const handleLogout = () => {
-    // יש להתנתק מהשרת ולמחוק את המידע בקונטקסט
     setAuth({ username: null, token: null, isLoggedIn: false });
   };
 
