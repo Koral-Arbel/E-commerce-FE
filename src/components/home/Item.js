@@ -10,13 +10,14 @@ function Item({ item, handleAddItemToCart, handleAddItemToFavorites }) {
   const [quantity, setQuantity] = useState(1);
   const [isInCart, setIsInCart] = useState(false);
   const [isInFavorites, setIsInFavorites] = useState(false);
+  const [isOutOfStock, setIsOutOfStock] = useState(false);
 
   const handleQuantityChange = (event) => {
     setQuantity(Number(event.target.value));
   };
 
   const handleAddToCart = () => {
-    if (!isInCart) {
+    if (!isInCart && !isOutOfStock) {
       handleAddItemToCart(item.id, quantity);
       setIsInCart(true);
     }
@@ -28,26 +29,23 @@ function Item({ item, handleAddItemToCart, handleAddItemToFavorites }) {
   };
 
   useEffect(() => {
-    // נבדוק בכל פעם שמתבצע שינוי ב- item.id
-    // ונעדכן את הסטייטים בהתאם למצב הנוכחי
-    const checkItemStatus = () => {
-      const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
-      setIsInCart(cartItems.some((cartItem) => cartItem.id === item.id));
+    const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+    setIsInCart(cartItems.some((cartItem) => cartItem.id === item.id));
 
-      const favoritesItems =
-        JSON.parse(localStorage.getItem("favoritesItems")) || [];
-      setIsInFavorites(
-        favoritesItems.some((favItem) => favItem.id === item.id)
-      );
-    };
+    const favoritesItems =
+      JSON.parse(localStorage.getItem("favoritesItems")) || [];
+    setIsInFavorites(favoritesItems.some((favItem) => favItem.id === item.id));
 
-    // ברגע שהקומפוננטה נטענת, נבדוק את המצב הנוכחי
-    checkItemStatus();
-  }, [item.id]);
+    setIsOutOfStock(item.availableStock === 0);
+  }, [item.id, item.availableStock]);
 
   return (
     <Grid item xs={12} sm={6} md={4}>
-      <div className={styles["item-container"]}>
+      <div
+        className={`${styles["item-container"]} ${
+          isOutOfStock && styles["out-of-stock"]
+        }`}
+      >
         <Paper elevation={3} className={styles["item-content"]}>
           <div className={styles["item-title"]}>
             <span className={styles["span"]}>{item.title}</span>
@@ -69,6 +67,7 @@ function Item({ item, handleAddItemToCart, handleAddItemToFavorites }) {
               min="1"
               max={item.availableStock}
               className={styles["quantity-input"]}
+              readOnly={isOutOfStock} // אם הפריט במלאי 0, תחשוב על קריאת הכמות
             />
           </div>
 
@@ -77,12 +76,11 @@ function Item({ item, handleAddItemToCart, handleAddItemToFavorites }) {
             variant="contained"
             color="primary"
             startIcon={<FontAwesomeIcon icon={faShoppingCart} />}
-            disabled={isInCart}
-            className={`${styles.addToCartButton} ${
-              isInCart ? styles.disabledButton : ""
+            className={`${
+              isInCart || isOutOfStock ? styles.disabledButton : ""
             }`}
           >
-            Add to Cart
+            {isOutOfStock ? "Out of Stock" : "Add to Cart"}
           </Button>
 
           <Button
@@ -90,12 +88,11 @@ function Item({ item, handleAddItemToCart, handleAddItemToFavorites }) {
             variant="outlined"
             color="secondary"
             startIcon={<FontAwesomeIcon icon={faHeart} />}
-            disabled={isInFavorites}
-            className={`${styles.addToFavoritesButton} ${
-              isInFavorites ? styles.disabledButton : ""
+            className={`${
+              isInFavorites || isOutOfStock ? styles.disabledButton : ""
             }`}
           >
-            Add to Favorites
+            {isInFavorites ? "In Favorites" : "Add to Favorites"}
           </Button>
         </Paper>
       </div>

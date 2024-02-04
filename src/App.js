@@ -16,7 +16,7 @@ import Header from "./components/header/Header";
 
 function App() {
   const [errMsg] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
+  const [setSearchResults] = useState([]);
 
   const handleUpdateResults = (results) => {
     setSearchResults(results);
@@ -31,7 +31,6 @@ function App() {
         <Header />
         <Routes>
           <Route path="/" element={<Home />} />
-
           <Route path="/login" element={<Login />} />
           <Route path="/logout" element={<Logout />} />
           <Route path="/signUp" element={<Register />} />

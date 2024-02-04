@@ -5,7 +5,7 @@
 }
 
 .favorite-item-card {
-  flex: 1 0 calc(20% - 16px); /* שינוי כאן - שימוש ב־flex-grow וב־flex-shrink */
+  flex: 1 0 calc(20% - 16px);
   margin: 8px;
   box-sizing: border-box;
   border: 1px solid #ddd;

@@ -32,14 +32,12 @@ function SearchBar({ updateResults }) {
       }
     };
 
-    // Fetch data only if the user has stopped typing for 300 milliseconds
     const timeoutId = setTimeout(() => {
       if (searchItems.trim() !== "") {
         fetchData();
       }
     }, 300);
 
-    // Cleanup the timeout on every keystroke
     return () => clearTimeout(timeoutId);
   }, [searchItems, updateResults]);
 

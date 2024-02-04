@@ -152,7 +152,7 @@ function FavoriteList() {
         </Grid>
       )}
 
-      {/* Snackbar for displaying messages */}
+      {}
       <Snackbar
         open={!!snackbarMessage}
         autoHideDuration={3000}
@@ -161,7 +161,7 @@ function FavoriteList() {
         <MuiAlert
           elevation={6}
           variant="filled"
-          severity="info" // or "success", "warning", "error"
+          severity="info"
           onClose={handleSnackbarClose}
         >
           {snackbarMessage}

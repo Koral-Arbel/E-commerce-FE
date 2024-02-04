@@ -1,5 +1,3 @@
-/* Navbar.module.css */
-
 .nav {
   background-color: #333;
   color: white;
@@ -7,15 +5,14 @@
   justify-content: space-between;
   align-items: stretch;
   gap: 2rem;
-  padding: 1.5rem 2rem; /* שינוי קטן בפדינג מעלה ומטה */
+  padding: 1.5rem 2rem;
 }
 
 .site-title {
   font-size: 2rem;
-  font-weight: bold; /* הוספת קודם כל כותבים בולד */
+  font-weight: bold;
 }
 
-/* השאלה הכללית: כיצד תרצה לשנות את הגובה? */
 .nav ul {
   padding: 0;
   margin: 0;
@@ -32,7 +29,7 @@
   align-items: center;
   padding: 0.25rem;
   transition: background-color 0.3s ease;
-  font-size: 1.5rem; /* הוספת קודם כל, שינוי בגודל הגופן */
+  font-size: 1.5rem;
 }
 
 .nav li.active {
@@ -46,5 +43,5 @@
 .nav li:hover a {
   color: #fff;
   text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
-  font-size: 1.3rem; /* שינוי בגודל הגופן בעת התרגשות (hover) */
+  font-size: 1.3rem;
 }
