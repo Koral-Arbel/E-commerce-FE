@@ -61,6 +61,10 @@ function Home() {
     }
   };
 
+  const updateQuantity = (newQuantity) => {
+    setCart(newQuantity);
+  };
+
   const handlerUserProfile = async () => {
     try {
       const userProfile = await getProfileUser(auth.username);

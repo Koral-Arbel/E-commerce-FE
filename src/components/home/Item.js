@@ -17,8 +17,11 @@ function Item({ item, handleAddItemToCart, handleAddItemToFavorites }) {
 
   const handleAddToCart = () => {
     if (!isInCart) {
-      handleAddItemToCart(item.id, quantity);
-      setIsInCart(true);
+      const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+      if (!cartItems.some((cartItem) => cartItem.id === item.id)) {
+        handleAddItemToCart(item.id, quantity);
+        setIsInCart(true);
+      }
     }
   };
 
@@ -27,15 +30,18 @@ function Item({ item, handleAddItemToCart, handleAddItemToFavorites }) {
     setIsInFavorites(true);
   };
 
-  useEffect(() => {
-    // בדיקה האם הפריט בסל
+  const getDataFromLocalStorage = () => {
     const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
     setIsInCart(cartItems.some((cartItem) => cartItem.id === item.id));
 
-    // בדיקה האם הפריט במועדפים
     const favoritesItems =
       JSON.parse(localStorage.getItem("favoritesItems")) || [];
     setIsInFavorites(favoritesItems.some((favItem) => favItem.id === item.id));
+  };
+
+  useEffect(() => {
+    // הקראה לפונקציה ברגע שהקומפוננטה נטענת
+    getDataFromLocalStorage();
   }, [item.id]);
 
   return (
@@ -70,7 +76,10 @@ function Item({ item, handleAddItemToCart, handleAddItemToFavorites }) {
             variant="contained"
             color="primary"
             startIcon={<FontAwesomeIcon icon={faShoppingCart} />}
-            className={isInCart ? styles.disabledButton : ""}
+            disabled={isInCart}
+            className={`${styles.addToCartButton} ${
+              isInCart ? styles.disabledButton : ""
+            }`}
           >
             Add to Cart
           </Button>
@@ -80,7 +89,10 @@ function Item({ item, handleAddItemToCart, handleAddItemToFavorites }) {
             variant="outlined"
             color="secondary"
             startIcon={<FontAwesomeIcon icon={faHeart} />}
-            className={isInFavorites ? styles.disabledButton : ""}
+            disabled={isInFavorites}
+            className={`${styles.addToFavoritesButton} ${
+              isInFavorites ? styles.disabledButton : ""
+            }`}
           >
             Add to Favorites
           </Button>

@@ -25,6 +25,8 @@ function CartItem({
         <input
           type="number"
           value={item.quantity}
+          min="1"
+          max={item.availableStock}
           onChange={(e) => handleUpdateQuantity(item.id, e.target.value)}
         />
       </label>
