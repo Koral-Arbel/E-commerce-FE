@@ -1,4 +1,4 @@
-
+Frontend (JavaScript & React with Material-UI)
 	1.	Setup React Project:
 	•	Create a new React project using Create React App or a similar tool.
 	2.	Design Components:
@@ -26,12 +26,13 @@
 	11.	GitHub Repository:
 	•	Upload the frontend code to a separate GitHub repository.
 Pictures from the project:
- ![image](https://github.com/Koral-Arbel/E-commerce-FE/assets/102149339/0c8b46d2-0da0-4e3d-bbfe-ced2d75aca35)Frontend (JavaScript & React with Material-UI)
- ![image](https://github.com/Koral-Arbel/E-commerce-FE/assets/102149339/fab5110b-fed5-4a03-a412-888241531a5b)
+ ![image](https://github.com/Koral-Arbel/E-commerce-FE/assets/102149339/0c8b46d2-0da0-4e3d-bbfe-ced2d75aca35)
 ![image](https://github.com/Koral-Arbel/E-commerce-FE/assets/102149339/0240c407-20d6-4d7a-bbe4-4d755495484b)
 ![image](https://github.com/Koral-Arbel/E-commerce-FE/assets/102149339/b4ecb3ef-0b2b-46c9-ab96-dacfffea0083)
 ![image](https://github.com/Koral-Arbel/E-commerce-FE/assets/102149339/6479b958-4527-4eb9-822b-e9c730e1134a)
 ![image](https://github.com/Koral-Arbel/E-commerce-FE/assets/102149339/ad406935-6b6a-4bf6-b6d1-bc2b6b104a87)
+ ![image](https://github.com/Koral-Arbel/E-commerce-FE/assets/102149339/fab5110b-fed5-4a03-a412-888241531a5b)
+
 
 
 
